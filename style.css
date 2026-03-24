@@ -708,7 +708,6 @@ h3,
     padding 0.3s ease;
   font-size: 1.05rem;
   line-height: 1.7;
-  opacity: 0.9;
 }
 
 .faq-item.active .faq-answer {
@@ -877,5 +876,10 @@ h3,
 
   .dealers-grid {
     flex-direction: column;
+  }
+
+  .faq-item.active .faq-answer {
+    max-height: 500px;
+    padding-bottom: 1.5rem;
   }
 }
