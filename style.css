@@ -36,7 +36,7 @@ h3,
   font-family: "Luckiest Guy", cursive;
 }
 
-/* ===== NAVIGATION ===== */
+/* nav */
 .nav {
   position: fixed;
   top: 0;
@@ -125,7 +125,7 @@ h3,
   overflow: hidden;
 }
 
-/* ===== HERO ===== */
+/* hero */
 .hero {
   background: var(--red);
   color: var(--white);
@@ -158,7 +158,6 @@ h3,
   text-transform: uppercase;
   position: relative;
   z-index: 2;
-  opacity: 0.9;
 }
 
 .hero-cta {
@@ -177,7 +176,7 @@ h3,
   pointer-events: none;
 }
 
-/* ===== BUTTONS ===== */
+/* buttons */
 .btn {
   display: inline-block;
   padding: 1rem 2.5rem;
@@ -211,7 +210,7 @@ h3,
   pointer-events: none;
 }
 
-/* ===== ABOUT ===== */
+/* about */
 .about {
   background: var(--teal);
   color: var(--white);
@@ -243,7 +242,6 @@ h3,
 .about-text p {
   font-size: 1.15rem;
   line-height: 1.8;
-  opacity: 0.95;
 }
 
 .about-text p + p {
@@ -339,7 +337,7 @@ h3,
   background: var(--white);
 }
 
-/* ===== PROGRAM ===== */
+/* program */
 .program {
   background: var(--white);
   color: var(--black);
@@ -478,12 +476,11 @@ h3,
   bottom: 2%;
   width: 25vw;
   max-width: 300px;
-  opacity: 1;
   z-index: 1;
   pointer-events: none;
 }
 
-/* ===== EXHIBITORS ===== */
+/* dealers */
 .dealers {
   background: var(--red);
   color: var(--white);
@@ -520,7 +517,7 @@ h3,
   text-align: center;
 }
 
-/* ===== TICKETS ===== */
+/* tickets */
 .tickets {
   background: var(--teal);
   color: var(--white);
@@ -544,8 +541,9 @@ h3,
 .tickets-subtitle {
   text-align: center;
   font-size: 1.15rem;
-  opacity: 0.9;
   margin-bottom: 3rem;
+  max-width: 500px;
+  justify-self: center;
 }
 
 .tickets-grid {
@@ -652,7 +650,7 @@ h3,
   transform: scaleX(-1);
 }
 
-/* ===== FAQ ===== */
+/* faq */
 .faq {
   background: var(--white);
   color: var(--black);
@@ -721,12 +719,11 @@ h3,
   bottom: 0;
   width: 25vw;
   max-width: 300px;
-  opacity: 1;
   z-index: 1;
   pointer-events: none;
 }
 
-/* ===== CONTACT ===== */
+/* contact */
 .contact {
   background: var(--black);
   color: var(--white);
@@ -798,7 +795,7 @@ h3,
   opacity: 0.4;
 }
 
-/* ===== SCROLL ANIMATIONS ===== */
+/* animations */
 .fade-in {
   opacity: 0;
   transform: translateY(30px);
@@ -812,7 +809,7 @@ h3,
   transform: translateY(0);
 }
 
-/* ===== RESPONSIVE ===== */
+/* mobile */
 @media (max-width: 768px) {
   .program-grid {
     flex-direction: column;

@@ -1,4 +1,3 @@
-// Program grid generator
 function formatTime(num) {
   const hours = Math.floor(num) % 24;
   const minutes = Math.round((num % 1) * 60);
@@ -81,7 +80,6 @@ const programLocations = {
 // };
 const programEvents = [];
 
-// Dealers renderer
 function renderDealers(dealers, containerId = "dealersGrid") {
   const container = document.getElementById(containerId);
   if (!container) return;
@@ -129,13 +127,11 @@ function renderDealers(dealers, containerId = "dealersGrid") {
 // };
 const dealersList = [];
 
-// Navbar scroll effect
 const nav = document.getElementById("nav");
 window.addEventListener("scroll", () => {
   nav.classList.toggle("scrolled", window.scrollY > 50);
 });
 
-// Mobile menu
 const hamburger = document.getElementById("hamburger");
 const navLinks = document.getElementById("navLinks");
 
@@ -151,7 +147,6 @@ navLinks.querySelectorAll(".nav-link").forEach((link) => {
   });
 });
 
-// FAQ accordion
 document.querySelectorAll(".faq-item").forEach((item) => {
   item.querySelector(".faq-question").addEventListener("click", () => {
     const wasActive = item.classList.contains("active");
@@ -162,7 +157,6 @@ document.querySelectorAll(".faq-item").forEach((item) => {
   });
 });
 
-// Scroll reveal
 const observer = new IntersectionObserver(
   (entries) => {
     entries.forEach((entry) => {
@@ -176,11 +170,9 @@ const observer = new IntersectionObserver(
 
 document.querySelectorAll(".fade-in").forEach((el) => observer.observe(el));
 
-// Render program grid
 renderProgram(programEvents);
 renderDealers(dealersList);
 
-// Carousel
 const carousel = document.querySelector(".carousel");
 if (carousel) {
   const track = carousel.querySelector(".carousel-track");
