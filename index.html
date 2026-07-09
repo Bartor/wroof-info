@@ -33,6 +33,8 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="style.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
   </head>
   <body>
     <nav class="nav" id="nav">
@@ -219,12 +221,48 @@
       />
       <div class="tickets-content">
         <h2 class="fade-in">Bilety</h2>
-        <p class="tickets-subtitle fade-in">
-          Sprzedaż biletów rozpocznie się niedługo
-          <br />
-          <br />
-          Sprawdzajcie nasze social media, by być na bieżąco.
+        <div
+          class="badge-switch"
+          role="group"
+          aria-label="Rodzaj identyfikatora"
+        >
+          <button
+            type="button"
+            class="badge-switch-btn"
+            data-badge-type="suiter"
+            aria-pressed="false"
+          >
+            Fursuiter
+          </button>
+          <button
+            type="button"
+            class="badge-switch-btn active"
+            data-badge-type="attendee"
+            aria-pressed="true"
+          >
+            Uczestnik
+          </button>
+          <button
+            type="button"
+            class="badge-switch-btn"
+            data-badge-type="helper"
+            aria-pressed="false"
+          >
+            Ekipa
+          </button>
+        </div>
+        <p class="badge-note">
+          <span id="badge-note-default">
+            Wybierz typ biletu poniżej, aby zobaczyć podgląd!
+          </span>
+          <span id="badge-note-helper" hidden>
+            Darmowy identyfikator dla helperów i twórców programu &ndash; jeżeli
+            chcesz go otrzymać, <a href="#join">dołącz do ekipy!</a>
+          </span>
         </p>
+        <div class="badge-row">
+          <div id="badge-preview" class="badge-container"></div>
+        </div>
         <div class="tickets-grid">
           <div class="ticket-card fade-in">
             <h3>Wejściówka</h3>
@@ -233,9 +271,16 @@
               <li>Dostęp do wszystkich atrakcji</li>
               <li>Prosta opaska identyfikująca uczestnika</li>
             </ul>
-            <button class="btn" disabled>Wkrótce</button>
+            <button class="btn" disabled>12.07, 19:00</button>
           </div>
-          <div class="ticket-card fade-in">
+          <div
+            class="ticket-card fade-in"
+            data-badge-kind="standard"
+            role="button"
+            tabindex="0"
+            aria-pressed="false"
+          >
+            <span class="ticket-badge">Podgląd</span>
             <h3>Identyfikator</h3>
             <div class="ticket-price">25 <span>PLN</span></div>
             <ul class="ticket-features">
@@ -246,10 +291,16 @@
               <li>Smycz z dwoma karabińczykami</li>
               <li>Wsparcie dla Wroof!</li>
             </ul>
-            <button class="btn" disabled>Wkrótce</button>
+            <button class="btn" disabled>12.07, 19:00</button>
           </div>
-          <div class="ticket-card featured fade-in">
-            <span class="ticket-badge">Wsparcie organizacji</span>
+          <div
+            class="ticket-card featured fade-in"
+            data-badge-kind="sponsor"
+            role="button"
+            tabindex="0"
+            aria-pressed="true"
+          >
+            <span class="ticket-badge">Podgląd</span>
             <h3>Identyfikator sponsorski</h3>
             <div class="ticket-price">50 <span>PLN</span></div>
             <ul class="ticket-features">
@@ -262,7 +313,7 @@
               <li>Smycz z dwoma karabińczykami</li>
               <li><strong>Wielkie wsparcie dla Wroof!</strong></li>
             </ul>
-            <button class="btn" disabled>Wkrótce</button>
+            <button class="btn" disabled>12.07, 19:00</button>
           </div>
         </div>
       </div>
@@ -361,8 +412,18 @@
         <div class="faq-item fade-in">
           <div class="faq-question">Jaki obowiązuje regulamin?</div>
           <div class="faq-answer">
-            Regulamin wydarzenia zostanie udostępniony wraz ze sprzedażą
-            biletów.
+            Obowiązuje
+            <a
+              href="https://legal.fursuitwalk.org/docs/wroof26-regulamin"
+              target="_blank"
+              >regulamin</a
+            >
+            oraz
+            <a
+              href="https://legal.fursuitwalk.org/docs/wroof26-prywatnosc"
+              target="_blank"
+              >polityka prywatności</a
+            >
           </div>
         </div>
 
