@@ -696,6 +696,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const noteDefault = document.getElementById("badge-note-default");
   const noteHelper = document.getElementById("badge-note-helper");
   const ticketsSection = document.getElementById("tickets");
+  const bgLayers = document.querySelectorAll(".tickets-bg");
 
   function scrollToPreview() {
     if (ticketsSection) ticketsSection.scrollIntoView({ behavior: "smooth" });
@@ -705,6 +706,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const isHelper = currentType === "helper";
     if (noteDefault) noteDefault.hidden = isHelper;
     if (noteHelper) noteHelper.hidden = !isHelper;
+    bgLayers.forEach((bg) => {
+      bg.classList.toggle("active", bg.dataset.bgType === currentType);
+    });
     kindCards.forEach((card) => {
       const kind = card.dataset.badgeKind;
       const isSelected = kind === currentKind;
