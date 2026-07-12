@@ -987,7 +987,7 @@ h3,
 }
 
 /* mobile */
-@media (max-width: 768px) {
+@media (max-width: 1120px) {
   .program-grid {
     flex-direction: column;
   }
