@@ -758,3 +758,46 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+  const TICKET_SALE_START = new Date("2026-07-12T19:00:00+02:00");
+
+  const ticketButtons = document.querySelectorAll(
+    ".ticket-card .btn[data-stage]"
+  );
+  if (!ticketButtons.length) return;
+
+  function formatCountdown(ms) {
+    const totalSeconds = Math.max(0, Math.floor(ms / 1000));
+    const days = Math.floor(totalSeconds / 86400);
+    const hours = Math.floor((totalSeconds % 86400) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    const pad = (n) => String(n).padStart(2, "0");
+    const time = `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+    return days > 0 ? `${days}d ${time}` : time;
+  }
+
+  ticketButtons.forEach((button) => {
+    button.addEventListener("click", (event) => {
+      if (new Date() < TICKET_SALE_START) event.preventDefault();
+    });
+  });
+
+  let intervalId = null;
+
+  function tick() {
+    const msRemaining = TICKET_SALE_START - new Date();
+    const isActive = msRemaining <= 0;
+    ticketButtons.forEach((button) => {
+      button.textContent = isActive ? "Wybieram" : formatCountdown(msRemaining);
+      button.classList.toggle("btn-disabled", !isActive);
+      button.setAttribute("aria-disabled", String(!isActive));
+      button.tabIndex = isActive ? 0 : -1;
+    });
+    if (isActive && intervalId !== null) clearInterval(intervalId);
+  }
+
+  tick();
+  intervalId = setInterval(tick, 300);
+});

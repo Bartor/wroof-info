@@ -203,7 +203,8 @@ h3,
   color: var(--red);
 }
 
-.btn:disabled {
+.btn:disabled,
+.btn.btn-disabled {
   background: #ccc;
   color: #888;
   cursor: not-allowed;
@@ -638,6 +639,28 @@ h3,
 
 .ticket-card .btn {
   margin-top: auto;
+}
+
+.ticket-card .btn:not(:disabled):not(.btn-disabled) {
+  background: var(--red);
+  color: var(--white);
+  box-shadow: 0 4px 18px rgba(232, 56, 87, 0.35);
+}
+
+.ticket-card .btn:not(:disabled):not(.btn-disabled):hover {
+  background: #d62d4c;
+  box-shadow: 0 8px 28px rgba(232, 56, 87, 0.45);
+}
+
+.ticket-card.featured .btn:not(:disabled):not(.btn-disabled) {
+  background: var(--gold);
+  color: var(--black);
+  box-shadow: 0 4px 18px rgba(242, 199, 120, 0.45);
+}
+
+.ticket-card.featured .btn:not(:disabled):not(.btn-disabled):hover {
+  background: #eab84f;
+  box-shadow: 0 8px 28px rgba(242, 199, 120, 0.55);
 }
 
 .ticket-card:hover {
