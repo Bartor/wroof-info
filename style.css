@@ -91,6 +91,42 @@
   --fade-size: 2.5rem;
 }
 
+/*
+  Luckiest Guy zgłasza descent ~30%, a atrament kapitalików zajmuje ~1%.
+  Własna rodzina z nadpisanymi metrykami — box wyrównany do atramentu.
+*/
+@font-face {
+  font-family: "Luckiest Guy UI";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("https://fonts.gstatic.com/s/luckiestguy/v25/_gP_1RrxsjcxVyin9l9n_j2hQ952ijl7aSqP.woff2")
+    format("woff2");
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
+    U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB,
+    U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+  ascent-override: 72%;
+  descent-override: 10%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Luckiest Guy UI";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("https://fonts.gstatic.com/s/luckiestguy/v25/_gP_1RrxsjcxVyin9l9n_j2hTd52ijl7aQ.woff2")
+    format("woff2");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212,
+    U+2215, U+FEFF, U+FFFD;
+  ascent-override: 72%;
+  descent-override: 10%;
+  line-gap-override: 0%;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -105,6 +141,36 @@ body {
   font-family: "Lato", Arial, sans-serif;
   color: var(--black);
   overflow-x: hidden;
+  hyphens: none;
+}
+
+p,
+li,
+dd,
+dt,
+blockquote,
+figcaption,
+.about-text,
+.join-text,
+.program-card-body,
+.faq-answer,
+.badge-note,
+.denmap-intro,
+.denmap-detail,
+.ticket-features,
+.merch-desc {
+  text-wrap: pretty;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.program-location,
+.program-card-header h3 {
+  text-wrap: balance;
 }
 
 a {
@@ -116,7 +182,21 @@ h2,
 h3,
 .nav-link,
 .btn {
-  font-family: "Luckiest Guy", cursive;
+  font-family: "Luckiest Guy UI", "Luckiest Guy", cursive;
+}
+
+/*
+  Luckiest Guy ma atrament powyżej font-bounding-box — przycinamy
+  do cap-height / descenderów, żeby flex i padding centrowały optycznie.
+*/
+.nav-link,
+.btn,
+.nav-btn-gold,
+.contact-email,
+.badge-switch-btn,
+.program-location,
+.faq-question {
+  text-box: trim-both cap text;
 }
 
 /* nav */
@@ -160,6 +240,7 @@ h3,
   letter-spacing: var(--ls-base);
   transition: color var(--t-base);
   text-transform: uppercase;
+  line-height: 1;
 }
 
 .nav-link:hover {
@@ -167,6 +248,9 @@ h3,
 }
 
 .nav-btn-gold {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: var(--gold);
   color: var(--black) !important;
   padding: var(--sp-2) var(--sp-4);
@@ -214,6 +298,7 @@ h3,
 .program-content,
 .dealers-content,
 .tickets-content,
+.merch-content,
 .contact-content {
   max-width: var(--content-max);
   margin: 0 auto;
@@ -228,6 +313,7 @@ h3,
 .program-content h2,
 .dealers-content h2,
 .tickets-content h2,
+.merch-content h2,
 .contact-content h2,
 .faq-content h2 {
   font-size: var(--fs-heading);
@@ -252,7 +338,7 @@ h3,
 }
 
 .hero-date {
-  font-family: "Luckiest Guy", cursive;
+  font-family: "Luckiest Guy UI", "Luckiest Guy", cursive;
   font-size: var(--fs-hero-date);
   color: var(--white);
   position: relative;
@@ -262,7 +348,7 @@ h3,
 
 .hero-subtitle {
   font-size: var(--fs-hero-sub);
-  font-weight: 300;
+  font-weight: 700;
   letter-spacing: var(--ls-wide);
   text-transform: uppercase;
   position: relative;
@@ -304,9 +390,12 @@ h3,
 
 /* buttons */
 .btn {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: var(--sp-4) var(--sp-6);
   font-size: var(--fs-lg);
+  line-height: 1;
   text-decoration: none;
   border-radius: var(--radius-pill);
   corner-shape: var(--squircle);
@@ -341,6 +430,7 @@ h3,
 .about {
   background: var(--teal);
   color: var(--white);
+  min-height: auto;
 }
 
 .about-content {
@@ -372,7 +462,6 @@ h3,
   margin-top: var(--sp-4);
 }
 
-.about-visual,
 .join-visual {
   display: flex;
   justify-content: center;
@@ -381,13 +470,33 @@ h3,
 }
 
 /* Carousel */
+.carousel-section {
+  min-height: auto;
+  padding: var(--sp-section) 0 0;
+  align-items: center;
+  justify-content: center;
+  background: var(--teal);
+}
+
 .carousel {
   position: relative;
-  width: 100%;
-  max-width: var(--content-narrow);
+  width: 50%;
+  max-width: 100%;
+  margin: 0 auto;
   overflow: hidden;
   border-radius: var(--radius-lg);
-  corner-shape: var(--squircle);
+}
+
+.carousel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  background:
+    linear-gradient(to top, rgba(0, 0, 0, 0.55) 0%, transparent 45%),
+    linear-gradient(to right, rgba(0, 0, 0, 0.4) 0%, transparent 18%),
+    linear-gradient(to left, rgba(0, 0, 0, 0.4) 0%, transparent 18%);
 }
 
 .carousel-track {
@@ -399,7 +508,7 @@ h3,
   width: 100%;
   max-width: none;
   flex-shrink: 0;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 16 / 9;
   object-fit: cover;
   filter: none;
   pointer-events: none;
@@ -413,10 +522,11 @@ h3,
   background: rgba(0, 0, 0, 0.5);
   color: var(--white);
   border: none;
-  width: 40px;
-  height: 40px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
-  font-size: var(--fs-xl);
+  font-size: 2rem;
+  line-height: 1;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -430,26 +540,26 @@ h3,
 }
 
 .carousel-prev {
-  left: var(--sp-2);
+  left: 1.25rem;
 }
 
 .carousel-next {
-  right: var(--sp-2);
+  right: 1.25rem;
 }
 
 .carousel-dots {
   position: absolute;
-  bottom: var(--sp-3);
+  bottom: 1.25rem;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  gap: var(--sp-2);
+  gap: var(--sp-3);
   z-index: 3;
 }
 
 .carousel-dot {
-  width: 8px;
-  height: 8px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
   background: var(--border-strong);
   border: none;
@@ -480,17 +590,31 @@ h3,
 .program {
   background: var(--white);
   color: var(--black);
+  min-height: auto;
+}
+
+.program-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-6);
+  padding-top: calc(var(--sp-section) + var(--sp-4));
 }
 
 .program-content h2 {
   text-align: center;
-  margin-bottom: var(--sp-4);
+  margin-bottom: 0;
   color: var(--red);
+}
+
+.program-content .tickets-subtitle {
+  margin-bottom: 0;
+  max-width: var(--measure-sm);
+  margin-inline: auto;
 }
 
 .program-grid {
   display: flex;
-  gap: var(--sp-5);
+  gap: var(--sp-4);
   align-items: flex-start;
 }
 
@@ -499,14 +623,14 @@ h3,
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--sp-4);
+  gap: var(--sp-3);
   align-self: flex-start;
 }
 
 .program-location {
-  font-family: "Luckiest Guy", cursive;
-  font-size: var(--fs-xl);
-  padding: var(--sp-3) var(--sp-4);
+  font-family: "Luckiest Guy UI", "Luckiest Guy", cursive;
+  font-size: var(--fs-lg);
+  padding: var(--sp-2) var(--sp-3);
   background: var(--black);
   color: var(--white);
   border-radius: var(--radius-md);
@@ -520,7 +644,7 @@ h3,
   border: 3px solid var(--black);
   border-radius: var(--radius-lg);
   corner-shape: var(--squircle);
-  padding: var(--sp-6);
+  padding: var(--sp-5);
   transition:
     transform var(--t-base),
     box-shadow var(--t-base);
@@ -535,10 +659,10 @@ h3,
 }
 
 .program-card-time {
-  font-family: "Luckiest Guy", cursive;
-  font-size: var(--fs-md);
+  font-family: "Luckiest Guy UI", "Luckiest Guy", cursive;
+  font-size: var(--fs-sm);
   color: var(--teal);
-  margin-bottom: var(--sp-2);
+  margin-bottom: var(--sp-1);
   letter-spacing: var(--ls-base);
   display: flex;
   align-items: center;
@@ -547,8 +671,8 @@ h3,
 }
 
 .program-card h3 {
-  font-size: var(--fs-xl);
-  margin-bottom: var(--sp-2);
+  font-size: var(--fs-lg);
+  margin-bottom: var(--sp-1);
   color: var(--red);
 }
 
@@ -568,7 +692,7 @@ h3,
 
 .program-card.active .program-card-body {
   max-height: 200px;
-  margin-top: var(--sp-3);
+  margin-top: var(--sp-2);
 }
 
 .program-card p {
@@ -588,7 +712,7 @@ h3,
   display: inline-block;
   background: var(--gold);
   color: var(--black);
-  font-family: "Luckiest Guy", cursive;
+  font-family: "Luckiest Guy UI", "Luckiest Guy", cursive;
   font-size: var(--fs-xs);
   padding: var(--sp-1) var(--sp-3);
   border-radius: var(--radius-pill);
@@ -657,7 +781,7 @@ h3,
 
 /* rozmiary wewnątrz SVG są w jednostkach viewBox, nie w skali strony */
 .denmap-stall-label {
-  font-family: "Luckiest Guy", cursive;
+  font-family: "Luckiest Guy UI", "Luckiest Guy", cursive;
   font-size: 5.4px;
   fill: var(--white);
   text-anchor: middle;
@@ -713,7 +837,7 @@ h3,
   margin-top: var(--sp-2);
   text-align: center;
   color: var(--black);
-  font-family: "Luckiest Guy", cursive;
+  font-family: "Luckiest Guy UI", "Luckiest Guy", cursive;
   font-size: var(--fs-md);
   letter-spacing: var(--ls-base);
 }
@@ -786,7 +910,7 @@ h3,
 }
 
 .denmap-detail-number {
-  font-family: "Luckiest Guy", cursive;
+  font-family: "Luckiest Guy UI", "Luckiest Guy", cursive;
   font-size: var(--fs-md);
   letter-spacing: var(--ls-base);
   color: var(--gold);
@@ -900,7 +1024,7 @@ h3,
 }
 
 .denmap-intro-count {
-  font-family: "Luckiest Guy", cursive;
+  font-family: "Luckiest Guy UI", "Luckiest Guy", cursive;
   color: var(--gold);
   letter-spacing: var(--ls-base);
   line-height: var(--lh-tight);
@@ -1008,7 +1132,7 @@ h3,
   border-radius: 50%;
   background: var(--teal);
   color: var(--white);
-  font-family: "Luckiest Guy", cursive;
+  font-family: "Luckiest Guy UI", "Luckiest Guy", cursive;
   font-size: var(--fs-sm);
 }
 
@@ -1148,7 +1272,7 @@ h3,
   right: 0;
   background: var(--gold);
   color: var(--black);
-  font-family: "Luckiest Guy", cursive;
+  font-family: "Luckiest Guy UI", "Luckiest Guy", cursive;
   font-size: var(--fs-xs);
   padding: var(--sp-2) var(--sp-4);
   border-radius: 0 var(--radius-lg) 0 var(--radius-md);
@@ -1163,7 +1287,7 @@ h3,
 }
 
 .ticket-price {
-  font-family: "Luckiest Guy", cursive;
+  font-family: "Luckiest Guy UI", "Luckiest Guy", cursive;
   font-size: var(--fs-display);
   color: var(--teal);
   margin: var(--sp-4) 0;
@@ -1201,10 +1325,101 @@ h3,
   transform: scaleX(-1);
 }
 
+/* merch / koszulka */
+.merch {
+  background: var(--gold);
+  color: var(--black);
+  min-height: auto;
+}
+
+.merch-bg-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.merch-bg {
+  position: absolute;
+  inset: -24px;
+  width: calc(100% + 48px);
+  height: calc(100% + 48px);
+  object-fit: cover;
+  opacity: 0.28;
+  /* różową grafikę badge zamieniamy na żółte tony */
+  filter: grayscale(1) sepia(1) saturate(2.2) hue-rotate(5deg) brightness(1.25)
+    blur(8px);
+}
+
+.merch-content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: var(--sp-7);
+}
+
+.merch-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-4);
+  max-width: var(--measure);
+}
+
+.merch-info h2 {
+  color: var(--black);
+  margin-bottom: var(--sp-2);
+}
+
+.merch-desc {
+  font-size: var(--fs-lg);
+  line-height: var(--lh-body);
+}
+
+.merch-author {
+  font-size: var(--fs-md);
+  color: var(--grey-700);
+}
+
+.merch-buy {
+  margin-top: var(--sp-2);
+  background: var(--teal);
+  color: var(--white);
+  box-shadow: 0 4px 18px rgba(3, 168, 168, 0.35);
+  transition:
+    transform var(--t-slow),
+    box-shadow var(--t-slow),
+    background-color var(--t-slow),
+    color var(--t-slow);
+}
+
+.merch-buy:hover {
+  background: var(--teal-dark);
+  color: var(--white);
+  box-shadow: 0 8px 28px rgba(2, 110, 110, 0.45);
+}
+
+.merch-visual {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.merch-shirt {
+  width: min(100%, 672px);
+  height: auto;
+  display: block;
+  border-radius: var(--radius-lg);
+  corner-shape: var(--squircle);
+  filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.18));
+}
+
 /* faq */
 .faq {
   background: var(--white);
   color: var(--black);
+  align-items: stretch;
+  justify-content: flex-start;
 }
 
 .faq-content {
@@ -1231,7 +1446,7 @@ h3,
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-family: "Luckiest Guy", cursive;
+  font-family: "Luckiest Guy UI", "Luckiest Guy", cursive;
   font-size: var(--fs-lg);
   letter-spacing: var(--ls-base);
 }
@@ -1271,48 +1486,84 @@ h3,
 .contact {
   background: var(--black);
   color: var(--white);
+  min-height: auto;
 }
 
 .contact-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-6);
+  padding-block: calc(var(--sp-section) / 2);
+  padding-top: calc(var(--sp-section) / 2 + var(--sp-5));
   text-align: center;
 }
 
 .contact-content h2 {
-  margin-bottom: var(--sp-5);
+  margin-bottom: 0;
 }
 
 .contact-content > p {
   font-size: var(--fs-lg);
   opacity: 0.8;
-  margin: 0 auto var(--sp-7);
+  margin: 0;
   max-width: var(--measure);
   line-height: var(--lh-body);
+}
+
+.contact-email {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--white);
+  font-size: var(--fs-md);
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: none;
+  padding: var(--sp-3) var(--sp-6);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: var(--radius-pill);
+  corner-shape: var(--squircle);
+  transition: var(--t-base);
+  font-family: "Luckiest Guy UI", "Luckiest Guy", cursive;
+  letter-spacing: var(--ls-base);
+}
+
+.contact-email:hover {
+  background: var(--red);
+  border-color: var(--red);
 }
 
 .contact-socials {
   display: flex;
   justify-content: center;
-  gap: var(--sp-5);
-  margin-top: var(--sp-6);
+  flex-wrap: wrap;
+  gap: var(--sp-4);
 }
 
 .contact-socials a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.25rem;
+  height: 3.25rem;
   color: var(--white);
-  font-size: var(--fs-md);
-  font-weight: 700;
   text-decoration: none;
-  padding: var(--sp-2) var(--sp-5);
   border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-md);
   corner-shape: var(--squircle);
   transition: var(--t-base);
-  font-family: "Luckiest Guy", cursive;
-  letter-spacing: var(--ls-base);
 }
 
 .contact-socials a:hover {
   background: var(--red);
   border-color: var(--red);
+}
+
+.contact-socials svg {
+  width: 1.35rem;
+  height: 1.35rem;
+  fill: currentColor;
 }
 
 .footer {
@@ -1354,9 +1605,13 @@ h3,
 }
 
 .badge-switch-btn {
-  font-family: "Luckiest Guy", cursive;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Luckiest Guy UI", "Luckiest Guy", cursive;
   font-size: var(--fs-md);
-  padding: var(--sp-3) var(--sp-5) var(--sp-2);
+  line-height: 1;
+  padding: var(--sp-3) var(--sp-5);
   border: 3px solid var(--white);
   border-radius: var(--radius-pill);
   background: transparent;
@@ -1377,7 +1632,7 @@ h3,
   text-align: center;
   max-width: var(--measure-sm);
   min-height: 3em;
-  margin: calc(var(--sp-3) * -1) auto var(--sp-5);
+  margin: calc(var(--sp-3) * -1) auto calc(var(--sp-5) + 1.5rem);
   font-size: var(--fs-md);
   position: relative;
   z-index: 4;
@@ -1393,14 +1648,14 @@ h3,
   color: var(--white);
 }
 
-/* ujemne marginesy wciągają podgląd identyfikatora między przyciski i kafelki */
+/* ujemny margin-top wciąga podgląd pod opis; dolny odstęp od kafelków */
 .badge-row {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
   gap: var(--sp-6);
   margin-top: clamp(-4.5rem, -8.7vw, -1.875rem);
-  margin-bottom: clamp(-4rem, -7.73vw, -1.67rem);
+  margin-bottom: 1.5rem;
   position: relative;
   z-index: 3;
 }
@@ -1474,8 +1729,19 @@ h3,
     transform: scale(1);
   }
 
-  .contact-socials {
-    flex-wrap: wrap;
+  .merch-content {
+    grid-template-columns: 1fr;
+    gap: var(--sp-6);
+  }
+
+  .merch-info {
+    align-items: center;
+    text-align: center;
+    max-width: none;
+  }
+
+  .merch-shirt {
+    width: min(100%, 456px);
   }
 
   .denmap {
@@ -1501,4 +1767,8 @@ h3,
     max-height: 500px;
     padding-bottom: var(--sp-5);
   }
+}
+
+#badge-note-helper {
+  margin-bottom: 4rem;
 }
