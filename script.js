@@ -310,7 +310,7 @@ const dealersList = [
   },
   {
     id: 2,
-    title: "Pink Cuttle Fish",
+    title: "pinkcuttlefish",
     lane: "B",
     row: 15,
     links: ["https://www.instagram.com/pinkcuttlefish/"],
@@ -325,8 +325,15 @@ const dealersList = [
     description:
       "Dehydracja to twór dwojga uzdolnionych i niebanalnie charyzmatycznych twórców~ Stoisko wypełnione przypadkowymi przedmiotami inspirowanymi wspólnymi halucynacjami podczas przemierzania pustyni marzeń.",
   },
-  { id: 4, title: "Aria Niziołek & Monedula", lane: "B", row: 13 },
-  { id: 5, title: "DumbDog Craft", lane: "A", row: 12 },
+  { id: 4, title: "To be announced 👀", lane: "B", row: 13 },
+  {
+    id: 5,
+    title: "DumbDog Craft",
+    lane: "A",
+    row: 12,
+    description:
+      "Cześć! Jesteśmy Dumb Dogs Crafts! Znajdziesz u nas autorskie gadżety z uroczymi zwierzątkami, memami oraz kulturą fandomową! Oferujemy naklejki, breloki, przypinki i kubki oraz różnorodne dodatki do fursuitów, takie jak fursuit spraye czy obroże! Znaleźć możesz u nas również części do suitow i bazy. Wpadnij się przywitać i zgarnać coś do swojej kolekcji merchu!",
+  },
   { id: 6, title: "CherryBomb", lane: "A", row: 11 },
   {
     id: 7,
@@ -371,7 +378,10 @@ const dealersList = [
     title: "TorrnDraws",
     lane: "B",
     row: 5,
-    links: ["https://www.instagram.com/torrndraws/"],
+    links: [
+      "https://www.instagram.com/torrndraws/",
+      "https://torrndraws.carrd.co/",
+    ],
     description:
       "Torrn tworzy ilustracje, designy i produkty ze słodkimi postaciami „furry”. Na stoisku znajdą się wydruki, przypinki, naklejki, fidget toye, akrylowe zawieszki i pluszaki. Poza tym dostępne będą też części do fursuitów drukowane z TPU.",
   },
@@ -422,16 +432,31 @@ const dealersList = [
   },
   {
     id: 18,
-    title: "Fox & Golden",
+    title: "Feather Fox Creations & Golden Stripes",
     lane: "D",
     row: 15,
+    links: [
+      "https://www.instagram.com/feather_fox_creations",
+      "https://www.instagram.com/goldenstripesofficial",
+    ],
     description:
       "Znajdziecie tu różnego rodzaju rękodzieło i oryginalną sztukę. Arlexa specjalizuje się w szyciu i druku 3D - znajdziecie u niej ogonki, uszka, dodatki do fursuitów, zawieszki, ale również rzeczy przedstawiające jej grafiki, jak naklejki czy breloki. Tay również zajmuje się rysunkiem i rękodziełem - zobaczycie u niego printy, naklejki, przypinki, breloczki, wszystko w tematyce antropomorficznych postaci, ale i pride oraz różnych fandomów. Oferuje również różnego rodzaju biżuterię i dodatki, zarówno do codziennego noszenia, jak i do fursuita - obroże, smycze, pluszowe kości, bransoletki.",
   },
-  { id: 19, title: "Jay Spikes Den", lane: "D", row: 14 },
+  {
+    id: 19,
+    title: "Jay Spikey’s Den",
+    lane: "D",
+    row: 14,
+    links: [
+      "https://www.instagram.com/jay_spikey",
+      "https://t.me/Artistc_mess",
+    ],
+    description:
+      "Jay Spikey’s Den to stoisko w tematyce okołofutrzastej, znajdziecie tutaj unikalne koszulki z ręcznie odbitymi linorytami, urocze naklejki, stylowe breloki, a także sporą ilość autorskich ilustracji. Oprócz tego można do mnie zagadać i zamówić spersonalizowanego arta, zapraszam!",
+  },
   {
     id: 20,
-    title: "BubbleGum Paws",
+    title: "Bubblegum paws",
     lane: "D",
     row: 13,
     links: [
@@ -470,11 +495,12 @@ const dealersList = [
   },
   {
     id: 24,
-    title: "Noreu.art",
+    title: "Noeru",
     lane: "C",
     row: 9,
+    links: ["https://linktr.ee/noeru_art"],
     description:
-      "Specjalizuję się w tworzeniu unikalnych maskotek. Od papużek przez liski aż do smoków! Szydełko to moja pasja, co sprawia, że pluszaki idealnie nadają się na prezent dla małych i dużych, pragnących dodać odrobinę magii do swojego życia. Na stoisku znajdziecie również rozmaite dodatki do amigurumi! Każdy znajdzie dla siebie coś wyjątkowego, zapraszam serdecznie!",
+      "Wkroczcie do świata miękkiego rękodzieła! Przytulne maskotki wykonane na szydełku oraz unikalne, ręcznie szyte pluszaki o niepowtarzalnym charakterze już czekają! Razem z nimi dodatki do amigurumi oraz nasze unikatowe autorskie oczka do pluszaków!",
   },
   {
     id: 25,
@@ -544,6 +570,8 @@ const dealersList = [
     lane: "D",
     row: 2,
     links: ["https://www.instagram.com/chatka_lisiej_mamy/"],
+    description:
+      "Lisia Mama zaprasza po kolejną dawkę puchatych dobroci! Ręcznie robione elementy fursuitów, łapy, ogony, pluszaki, a także autorskie naklejki i printy z motywem zwierzaków. Chodź, przybij piątkę!",
   },
   {
     id: 32,
