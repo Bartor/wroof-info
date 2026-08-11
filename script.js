@@ -339,7 +339,10 @@ const dealersList = [
     title: "CherryBomb",
     lane: "A",
     row: 11,
-    links: ["https://www.instagram.com/cha0s_error?igsh=MTd6c251dDRlNmgwNw=="],
+    links: [
+      "https://www.instagram.com/cha0s_error?igsh=MTd6c251dDRlNmgwNw==",
+      "https://www.instagram.com/timbermaws?igsh=MWR2bDU3bHcwdmVwYg%3D%3D&utm_source=qr",
+    ],
     description:
       "Pod nazwą CherryBomb kryje się duet Timber&Error! Jesteśmy wielbicielami jaskrawych kolorów w grafikach, a znajdziecie u nas między innymi ilustracje, breloki akrylowe i pluszowe oraz multum naklejek z przeróżnych fandomów jak i również oryginalnych designów! X3 Na naszym stoisku czekają na was też ręcznie robione akcesoria, części do fursuitów, naszywki i inne drobiazgi!",
   },
@@ -395,11 +398,16 @@ const dealersList = [
   },
   {
     id: 13,
-    title: "Kącik Jules i Luny",
+    title: "Luna & Jules",
     lane: "B",
     row: 4,
+    links: [
+      "https://www.instagram.com/jul.kaim",
+      "https://www.instagram.com/dyke.pl",
+      "https://dyke.pl",
+    ],
     description:
-      "Tworzymy sztukę i silly rzeczy. U nas znajdziecie naklejki, naszywki, printy i nie tylko. Wszystko w tematyce furry i queer.",
+      "Jules to ilustratorka i pasjonatka literatury i komiksu. Luna to artystka audiowizualna i domorosła rękodzielniczka. Razem tworzą przestrzeń, w której znajdziecie queerowe printy, naklejki i rękodzieło.",
   },
   {
     id: 14,
