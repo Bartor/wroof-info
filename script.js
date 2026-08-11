@@ -367,7 +367,14 @@ const dealersList = [
     description:
       "Foslo ilustruje i sitodrukuje, lokalnie z Wrocławia, uwielbia klimaty fantastyki, mitologii i folkloru, jest wielką fanką pokracznych stworów ze średniowiecznych manuskryptów. Oferuje printy, naklejki, breloki, przypinki i rysunki na zamówienie.",
   },
-  { id: 9, title: "Little Demon", lane: "A", row: 8 },
+  {
+    id: 9,
+    title: "Little Demon",
+    lane: "A",
+    row: 8,
+    description:
+      "Little Demon - wyjątkowe rękodzieło z gliny! Breloczki, przypinki i magnesy, a także własnoręcznie drukowane i składane sticker booki. Do tego printy, naklejki oraz Blind Bagi inspirowane tematyką eventu!",
+  },
   {
     id: 10,
     title: "Punished Brut",
