@@ -322,13 +322,14 @@ const dealersList = [
     title: "Dehydracja",
     lane: "B",
     row: 14,
+    links: ["https://t.me/endrayreido"],
     description:
-      "Dehydracja to twór dwojga uzdolnionych i niebanalnie charyzmatycznych twórców~ Stoisko wypełnione przypadkowymi przedmiotami inspirowanymi wspólnymi halucynacjami podczas przemierzania pustyni marzeń.",
+      "Dehydracja to twór dwojga uzdolnionych i niebanalnie charyzmatycznych twórców~ Stoisko wypełnione przypadkowymi przedmiotami inspirowanymi wspólnymi halucynacjami podczas przemierzania pustyni marzeń. Artyści: Juice i EndRayRei.",
   },
   { id: 4, title: "To be announced 👀", lane: "B", row: 13 },
   {
     id: 5,
-    title: "DumbDog Craft",
+    title: "Dumb Dogs Craft",
     lane: "A",
     row: 12,
     description:
@@ -372,6 +373,7 @@ const dealersList = [
     title: "Little Demon",
     lane: "A",
     row: 8,
+    links: ["https://www.instagram.com/kakanra.art?igsh=Mm0xNTRqeGg3eW84"],
     description:
       "Little Demon - wyjątkowe rękodzieło z gliny! Breloczki, przypinki i magnesy, a także własnoręcznie drukowane i składane sticker booki. Do tego printy, naklejki oraz Blind Bagi inspirowane tematyką eventu!",
   },
@@ -421,6 +423,7 @@ const dealersList = [
     title: "LunArtFox Lab",
     lane: "B",
     row: 3,
+    links: ["https://linktr.ee/LunArtFox_Lab"],
     description:
       "LunArtFox_Lab to dwójka artystów (White LunArt oraz Silv3rfox_den), która połączyła wspólne zamiłowania do druku 2D oraz 3D, by stworzyć razem coś unikalnego. Oboje czerpiemy radość z tworzenia sztuki wszelkiego rodzaju, takiej jak przypinki, zawieszki, ilustracje, wydruki 3D, figurki i wiele więcej. Można u nas znaleźć rzeczy nawiązujące do tematyki fantastycznej, w tym również popkultury, a w szczególności starszych gier, filmów i książek - tematyka i styl naszych prac są ukłonem w stronę starszych animacji oraz gier. Znajdziecie też dodatki i akcesoria nawiązujące do popkultury i memów, naklejki i przypinki inspirowane zmaganiami z drukiem 3D, ale również dodatki do cosplayów czy fursuitów. Niektóre z wydruków są bardzo praktyczne, jak na przykład spinki wyrażające różne ekspresje, które mogą się stać częścią cosplayu. Na naszym stanowisku znajdziecie również wiele zwierzaków, a w szczególności kotów. Zapraszamy!",
   },
