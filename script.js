@@ -334,7 +334,15 @@ const dealersList = [
     description:
       "Cześć! Jesteśmy Dumb Dogs Crafts! Znajdziesz u nas autorskie gadżety z uroczymi zwierzątkami, memami oraz kulturą fandomową! Oferujemy naklejki, breloki, przypinki i kubki oraz różnorodne dodatki do fursuitów, takie jak fursuit spraye czy obroże! Znaleźć możesz u nas również części do suitow i bazy. Wpadnij się przywitać i zgarnać coś do swojej kolekcji merchu!",
   },
-  { id: 6, title: "CherryBomb", lane: "A", row: 11 },
+  {
+    id: 6,
+    title: "CherryBomb",
+    lane: "A",
+    row: 11,
+    links: ["https://www.instagram.com/cha0s_error?igsh=MTd6c251dDRlNmgwNw=="],
+    description:
+      "Pod nazwą CherryBomb kryje się duet Timber&Error! Jesteśmy wielbicielami jaskrawych kolorów w grafikach, a znajdziecie u nas między innymi ilustracje, breloki akrylowe i pluszowe oraz multum naklejek z przeróżnych fandomów jak i również oryginalnych designów! X3 Na naszym stoisku czekają na was też ręcznie robione akcesoria, części do fursuitów, naszywki i inne drobiazgi!",
+  },
   {
     id: 7,
     title: "Chmural",
@@ -367,11 +375,11 @@ const dealersList = [
   },
   {
     id: 11,
-    title: "Aria & Kozel Store",
+    title: "The Woof Above",
     lane: "B",
     row: 6,
     description:
-      "Zapraszamy na stoisko Aria&Kozel Store! Znajdziecie u nas merch różnego rodzaju, od naklejek i przypinek aż po akcesoria do fursuitów! Oferujemy: naklejki, przypinki, breloczki, kubki, oczka do fursuitów, podkładki pod myszkę i pod kubek; ogonki, łapki oraz obroże dostępne w różnych kolorach i wzorach; pluszaki i propy do fursuitów, m.in. pluszowe kostki, liście, patyki, serki oraz jajka.",
+      "The Woof Above to stoisko gdzie możecie wznieść się ponad chmury i odkryć różnorodny merch! Znajdziecie tu printy, naklejki, przypinki i breloczki z fursonami, a także ciekawe akcesoria i propy do fursuitów - od obroży, kokardek i bandanek po pluszowe kostki, listki, rybki, sadzone jajka i wiele innych! Oferuję również części do fursuitów takie jak ogonki i górne łapki, wykonane przez Arie - artystkę zajmującą się szyciem fursuitów i akcesoriów od 2021 roku. A jeśli szukacie czegoś na co dzień czekają na was kubki, torby, podkładki i inne gadżety! Każdy znajdzie coś dla siebie! ^^",
   },
   {
     id: 12,
@@ -546,9 +554,10 @@ const dealersList = [
   },
   {
     id: 29,
-    title: "Dragon Fire Deer",
+    title: "Dragonfire Deer x Print it All",
     lane: "D",
     row: 4,
+    links: ["https://t.me/dragonfiredeer", "https://t.me/print_it_all"],
     description:
       "Dragonfire Deer x Print it All - stoisko, gdzie tradycyjne rzemiosło spotyka się z nowoczesnym drukiem. Profesjonalny druk 3D i sublimacja od Print it All gwarantują trwałość i jakość wykonania, a Dragonfire Deer to unikalne, ręcznie szyte akcesoria (fursuit props). U nas znajdziesz: obroże, fursuity premade, łapki, ogonki, pawsy, części do fursuitów (bazy, oczka, chłodzenia, ledy do oczek itp.), fursuit spraye, propsy, przypinki, naklejki oraz wydruki i bazy drukowane 3D.",
   },
