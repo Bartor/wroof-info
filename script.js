@@ -390,6 +390,10 @@ const dealersList = [
     title: "The Woof Above",
     lane: "B",
     row: 6,
+    links: [
+      "https://www.instagram.com/thewoofabove?igsh=Znc2anBsbHlya3M0",
+      "https://t.me/TheWoofAbove",
+    ],
     description:
       "The Woof Above to stoisko gdzie możecie wznieść się ponad chmury i odkryć różnorodny merch! Znajdziecie tu printy, naklejki, przypinki i breloczki z fursonami, a także ciekawe akcesoria i propy do fursuitów - od obroży, kokardek i bandanek po pluszowe kostki, listki, rybki, sadzone jajka i wiele innych! Oferuję również części do fursuitów takie jak ogonki i górne łapki, wykonane przez Arie - artystkę zajmującą się szyciem fursuitów i akcesoriów od 2021 roku. A jeśli szukacie czegoś na co dzień czekają na was kubki, torby, podkładki i inne gadżety! Każdy znajdzie coś dla siebie! ^^",
   },
