@@ -581,7 +581,7 @@ const dealersList = [
     row: 4,
     links: ["https://t.me/dragonfiredeer", "https://t.me/print_it_all"],
     description:
-      "Dragonfire Deer x Print it All - stoisko, gdzie tradycyjne rzemiosło spotyka się z nowoczesnym drukiem. Profesjonalny druk 3D i sublimacja od Print it All gwarantują trwałość i jakość wykonania, a Dragonfire Deer to unikalne, ręcznie szyte akcesoria (fursuit props). U nas znajdziesz: obroże, fursuity premade, łapki, ogonki, pawsy, części do fursuitów (bazy, oczka, chłodzenia, ledy do oczek itp.), fursuit spraye, propsy, przypinki, naklejki oraz wydruki i bazy drukowane 3D.",
+      "Zapraszamy na stoisko, gdzie rękodzieło spotyka się z drukiem 3D oraz sublimacją. Dragonfire Deer & Print it All to fuzja dwóch pasji, której owocem są unikalne produkty dopasowane do Waszych potrzeb. Co nas wyróżnia? Wysoka jakość wykonania oferowanych towarów oraz duża różnorodność asortymentu – od komponentów do produkcji fursuitów, przez zabawki z druku 3D, po szyte przez nas poduszki i propsy z własnymi, unikatowymi wzorami.",
   },
   {
     id: 30,
