@@ -99,8 +99,7 @@
 
   /* plan terenu - poniżej tej szerokości podpisy pomieszczeń robią się
      nieczytelne, więc plan przewija się w bok zamiast kurczyć */
-  --venuemap-detail-h: 15rem;
-  --venuemap-list-w: 360px;
+  --venuemap-detail-h: 9rem;
   --venuemap-min-w: 600px;
 }
 
@@ -685,12 +684,36 @@ a.program-special-chip:focus-visible {
   transition: background var(--t-fast);
 }
 
+/* kolumna nosi kolor kategorii swojej strefy - ten sam, którym sala jest
+   pomalowana na planie terenu */
+.program-column[data-venue-cat] .program-location {
+  background: var(--cat-solid);
+  color: var(--cat-solid-ink);
+}
+
 /* nagłówek kolumny prowadzi na plan terenu; podpowiedź jest widoczna zawsze,
    bo na dotyku nie ma najechania, którym można by ją odsłonić */
 a.program-location:hover,
 a.program-location:focus-visible {
   background: var(--teal-dark);
   outline: none;
+}
+
+.program-column[data-venue-cat] a.program-location:hover,
+.program-column[data-venue-cat] a.program-location:focus-visible {
+  background: var(--cat-solid-hover);
+}
+
+/* sala wskazana z planu terenu - ramka gaśnie po chwili, żeby nie zostawiać
+   kolumny w trwale innym stanie */
+.program-column.is-target .program-location {
+  box-shadow: 0 0 0 4px var(--black);
+}
+
+.program-column .program-location {
+  transition:
+    background var(--t-fast),
+    box-shadow var(--t-base);
 }
 
 .program-location-map {
@@ -1689,8 +1712,16 @@ a.program-location:focus-visible {
   --cat-line-style: solid;
   --cat-dash: none;
   --cat-label: var(--white);
-  /* kolor nazwy na białej karcie legendy i na wybranym przycisku listy */
+  /* obrys wybranej strefy */
+  --cat-line-sel: var(--black);
+  --cat-line-w-sel: 0.9;
+  --cat-dash-sel: none;
+  /* kolor nazwy na białej karcie legendy */
   --cat-ink: var(--teal-dark);
+  /* wersja kryjąca - nagłówki kolumn programu, gdzie kategoria musi być tłem */
+  --cat-solid: var(--cat-fill);
+  --cat-solid-hover: var(--cat-fill-strong);
+  --cat-solid-ink: var(--white);
 }
 
 [data-venue-cat="program"] {
@@ -1714,6 +1745,14 @@ a.program-location:focus-visible {
   --cat-dash: 2.4 1.6;
   --cat-label: var(--grey-700);
   --cat-ink: var(--gold-dark);
+  /* strefa nie ma wypełnienia, więc wybór zaznacza sam obrys: ta sama kreska,
+     tylko grubsza - czarna ramka udawałaby pomieszczenie */
+  --cat-line-sel: var(--gold-dark);
+  --cat-line-w-sel: 1.3;
+  --cat-dash-sel: 2.4 1.6;
+  --cat-solid: var(--gold);
+  --cat-solid-hover: var(--gold-dark);
+  --cat-solid-ink: var(--black);
 }
 
 /* znaczniki wejść - ten sam zielony trójkąt co pod planem Dealer's Denu */
@@ -1749,13 +1788,13 @@ a.program-location:focus-visible {
   fill: var(--cat-fill-strong);
 }
 
-/* wybór musi odróżniać się od najechania, więc oprócz ciemniejszego
-   wypełnienia strefa dostaje grubszy, ciągły obrys */
+/* wybór zaznacza sam obrys - grubszy, w kolorze i kresce swojej kategorii.
+   Ciemniejsze wypełnienie zostaje wyłącznie dla najechania, więc oba stany
+   czyta się osobno, także na wybranej strefie */
 .venuemap-area.selected .venuemap-area-shape {
-  fill: var(--cat-fill-strong);
-  stroke: var(--black);
-  stroke-width: 1.1;
-  stroke-dasharray: none;
+  stroke: var(--cat-line-sel);
+  stroke-width: var(--cat-line-w-sel);
+  stroke-dasharray: var(--cat-dash-sel);
 }
 
 .venuemap-area:focus {
@@ -1782,19 +1821,16 @@ a.program-location:focus-visible {
   box-shadow: var(--shadow-sm);
 }
 
-/* lista stref ma stałą liczbę wierszy, więc to ona wyznacza wysokość rzędu -
-   zmiana opisu nie przesuwa układu */
-.venuemap-side {
-  display: flex;
-  gap: var(--sp-6);
-  align-items: stretch;
-  min-height: var(--venuemap-detail-h);
-}
-
+/* opis wybranej strefy stoi nad planem; stała wysokość sprawia, że wybór
+   kolejnej strefy nie przesuwa mapy pod kursorem */
 .venuemap-detail {
-  flex: 1 1 0;
-  min-width: 0;
-  padding-right: var(--sp-2);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: var(--venuemap-detail-h);
+  max-width: var(--measure);
+  margin-inline: auto;
+  text-align: center;
 }
 
 .venuemap-detail h3 {
@@ -1813,34 +1849,10 @@ a.program-location:focus-visible {
   opacity: 0.8;
 }
 
-/* punkty programu tej strefy - lista bywa długa, więc przewija się w miejscu
-   zamiast rozpychać sekcję */
-.venuemap-detail-program {
-  list-style: none;
-  margin-top: var(--sp-3);
-  max-height: 9rem;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  scrollbar-width: thin;
-  scrollbar-color: var(--border-strong) transparent;
-}
-
-.venuemap-detail-program li {
-  display: flex;
-  gap: var(--sp-3);
-  padding: var(--sp-1) 0;
-  font-size: var(--fs-md);
-  line-height: var(--lh-snug);
-}
-
-.venuemap-detail-time {
-  flex: 0 0 3.5rem;
-  font-weight: 700;
-}
-
 .venuemap-detail-links {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: var(--sp-3);
 }
 
@@ -1867,12 +1879,6 @@ a.program-location:focus-visible {
   outline: none;
 }
 
-.venuemap-detail.is-intro {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
 .venuemap-intro p {
   font-size: var(--fs-lg);
   line-height: var(--lh-snug);
@@ -1884,66 +1890,16 @@ a.program-location:focus-visible {
   opacity: 0.85;
 }
 
-.venuemap-list {
-  flex: 0 0 var(--venuemap-list-w);
-  list-style: none;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--sp-2);
-  align-content: start;
-}
-
-.venuemap-chip {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: var(--sp-2);
-  padding: var(--sp-2) var(--sp-3);
-  border: 2px solid var(--border-soft);
-  border-radius: var(--radius-pill);
-  background: var(--surface-soft);
-  color: var(--white);
-  font-family: inherit;
-  font-size: var(--fs-sm);
-  text-align: left;
-  cursor: pointer;
-  overflow: hidden;
-  transition:
-    background var(--t-fast),
-    color var(--t-fast),
-    border-color var(--t-fast);
-}
-
-.venuemap-chip-label {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* kropka powtarza kolor strefy z planu; na tealowym tle sekcji ratuje ją
-   obrys w kolorze obrysu z planu */
-.venuemap-chip::before {
-  content: "";
-  flex: 0 0 auto;
-  width: 0.7rem;
-  height: 0.7rem;
-  border-radius: 50%;
-  background: var(--cat-fill);
-  border: 2px var(--cat-line-style) var(--cat-line);
-}
-
-.venuemap-chip:hover,
-.venuemap-chip.hovered,
-.venuemap-chip:focus-visible {
-  background: var(--surface-strong);
-  border-color: var(--white);
-  outline: none;
-}
-
-.venuemap-chip.selected {
-  background: var(--white);
-  color: var(--cat-ink);
-  border-color: var(--white);
+/* Plany, kafelki programu i listy stoisk klika się, a nie czyta zaznaczając -
+   przy wielokrotnym klikaniu zaznaczanie tekstu tylko przeszkadza. Panele
+   z opisami zostają zaznaczalne, bo z nich kopiuje się nazwy i odnośniki. */
+.program-special,
+.program-grid,
+.denmap-plan,
+.denmap-list,
+.venuemap-plan {
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 /* tickets */
@@ -2561,29 +2517,9 @@ a.program-location:focus-visible {
     height: 20rem;
   }
 
-  .venuemap-side {
-    flex-direction: column;
-    gap: var(--sp-5);
-  }
-
-  .venuemap-list {
-    flex: 0 0 auto;
-    width: 100%;
-  }
-
-  .venuemap-side {
-    min-height: 0;
-  }
-
   .faq-item.active .faq-answer {
     max-height: 500px;
     padding-bottom: var(--sp-5);
-  }
-}
-
-@media (max-width: 600px) {
-  .venuemap-list {
-    grid-template-columns: minmax(0, 1fr);
   }
 }
 
