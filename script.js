@@ -170,6 +170,25 @@ function fixPolishWidow(element) {
   }
 }
 
+// Wygasza tę krawędź przewijanego kontenera, po której da się jeszcze
+// przewinąć - używają tego listy w Dealer's Denie, program i lista punktów
+// programu na planie terenu. `axis: "x"` przełącza na przewijanie w poziomie.
+function updateScrollFade(el, axis = "y") {
+  const horizontal = axis === "x";
+  const size = horizontal ? el.clientWidth : el.clientHeight;
+  const total = horizontal ? el.scrollWidth : el.scrollHeight;
+  const offset = horizontal ? el.scrollLeft : el.scrollTop;
+  const scrollable = total > size + 2;
+  el.classList.toggle(
+    horizontal ? "is-clip-left" : "is-clip-top",
+    scrollable && offset > 2,
+  );
+  el.classList.toggle(
+    horizontal ? "is-clip-right" : "is-clip-bottom",
+    scrollable && offset + size < total - 2,
+  );
+}
+
 function applyPolishTypography(root = document.body) {
   root.querySelectorAll(POLISH_TYPOGRAPHY_SELECTOR).forEach((block) => {
     fixPolishOrphans(block);
@@ -185,27 +204,40 @@ function renderProgram(events, containerId = "programGrid") {
   const sorted = [...events].sort((a, b) => a.start - b.start);
 
   container.innerHTML = Object.entries(programLocations)
-    .map(([key, label]) => {
+    .map(([key, { venue }]) => {
       const locationEvents = sorted.filter((e) => e.location === key);
       if (!locationEvents.length) return "";
+      const label = escapeHtml(programLocationLabel(key));
       return `
-      <div class="program-column fade-in">
-        <div class="program-location">${label}</div>
+      <div class="program-column">
+        ${
+          venue
+            ? `<a class="program-location" href="#venue" data-venue-id="${venue}">${label}<span class="program-location-map">Pokaż na mapie</span></a>`
+            : `<div class="program-location">${label}</div>`
+        }
         ${locationEvents
           .map((event) => {
             const tagStyle = event.highlight
               ? ' style="background: var(--red); color: var(--white)"'
               : "";
+            // opis i prowadzący bywają nieuzupełnione - wtedy kafelek nie ma
+            // czego rozwijać, więc nie udaje klikalnego
+            const hasHosts = Boolean(event.hosts && event.hosts.length);
+            const hasBody = Boolean(event.description) || hasHosts;
             return `
-            <div class="program-card" data-expandable>
+            <div class="program-card"${hasBody ? " data-expandable" : ""}>
               <div class="program-card-header">
-                <div class="program-card-time">${formatTime(event.start)} - ${formatTime(event.end)} <span class="program-card-tag"${tagStyle}>${event.tag}</span></div>
+                <div class="program-card-time">${formatTime(event.start)} - ${formatTime(event.end)}${event.tag ? ` <span class="program-card-tag"${tagStyle}>${event.tag}</span>` : ""}</div>
                 <h3>${event.title}</h3>
               </div>
-              <div class="program-card-body">
-                <p>${event.description}</p>
-                ${event.hosts && event.hosts.length ? `<div class="program-card-host">${formatHosts(event.hosts)}</div>` : ""}
-              </div>
+              ${
+                hasBody
+                  ? `<div class="program-card-body">
+                ${event.description ? `<p>${event.description}</p>` : ""}
+                ${hasHosts ? `<div class="program-card-host">${formatHosts(event.hosts)}</div>` : ""}
+              </div>`
+                  : ""
+              }
             </div>`;
           })
           .join("")}
@@ -213,7 +245,8 @@ function renderProgram(events, containerId = "programGrid") {
     })
     .join("");
 
-  container.querySelectorAll(".fade-in").forEach((el) => observer.observe(el));
+  // cały rozkład pojawia się jako jedna całość - obserwowana jest siatka,
+  // a nie poszczególne kolumny, więc kafelki nie wjeżdżają jeden po drugim
 
   container.querySelectorAll("[data-expandable]").forEach((card) => {
     card.addEventListener("click", () => {
@@ -225,14 +258,54 @@ function renderProgram(events, containerId = "programGrid") {
     });
   });
 
+  // sam odnośnik przewija do sekcji z planem, a my dodatkowo zaznaczamy strefę
+  container.querySelectorAll(".program-location[data-venue-id]").forEach((el) => {
+    el.addEventListener("click", () => {
+      if (selectVenueArea) selectVenueArea(el.dataset.venueId);
+    });
+  });
+
+  // kolumny stoją w jednym rzędzie i przewijają się w bok
+  const updateProgramFade = () => updateScrollFade(container, "x");
+  container.addEventListener("scroll", updateProgramFade);
+  window.addEventListener("resize", updateProgramFade);
+  updateProgramFade();
+
   applyPolishTypography(container);
 }
 
+// Klucze to kolumny z harmonogramu organizatorów, `venue` wskazuje strefę na
+// planie terenu - stąd bierze się i odnośnik z nagłówka kolumny na mapę, i lista
+// punktów programu w opisie strefy. Kolejność kluczy = kolejność kolumn.
+//
+// Uwaga: nazwy kolumn w harmonogramie nie pokrywają się z nazwami na planie -
+// kolumna "Teren" to scena zewnętrzna, "Scena zewnętrzna" to teren przed halą,
+// a koncerty z "Łącznika" grają w Sali Koncertowej. Dlatego nagłówek kolumny
+// bierze nazwę ze strefy, a nie z klucza; `label` nadpisuje ją w razie potrzeby,
+// a klucz bez `venue` po prostu nie dostaje powiązań z mapą.
 const programLocations = {
-  stage: "Scena główna",
-  workshop: "Sala warsztatowa",
-  trade: "Dealer's Den",
+  sala1: { venue: "warsztatowa" },
+  sala2: { venue: "prelekcyjna-1" },
+  sala3: { venue: "prelekcyjna-2" },
+  teren: { venue: "scena-zewnetrzna" },
+  scena: { venue: "teren-przed-hala" },
+  chill: { venue: "strefa-chill" },
+  game: { venue: "strefa-gier" },
+  lacznik: { venue: "klub-lacznik" },
 };
+
+// nagłówek kolumny programu = nazwa strefy z planu, żeby każde miejsce miało na
+// stronie dokładnie jedną nazwę
+function programLocationLabel(key) {
+  const location = programLocations[key];
+  if (location.label) return location.label;
+  const area = venueAreas.find((item) => item.id === location.venue);
+  return area ? area.title : key;
+}
+
+// ustawiane przez renderVenueMap - pozwala zaznaczyć strefę na planie z innych
+// sekcji strony (nagłówki kolumn programu)
+let selectVenueArea = null;
 
 // const exampleEvent = {
 //   start: 10,
@@ -241,9 +314,156 @@ const programLocations = {
 //   description: "Rejestracja uczestników.",
 //   hosts: ["Wroof"],
 //   tag: "Organizacyjne",
-//   location: "stage",
+//   location: "sala1",
 // };
-const programEvents = [];
+//
+// Punkty trwające cały dzień - nie siedzą w kolumnie żadnej sali, tylko stoją
+// nad rozkładem. `href` prowadzi wprost do sekcji, a `venue` na plan terenu
+// z zaznaczeniem strefy (jak nagłówki kolumn programu).
+const programSpecials = [
+  { title: "Dealer's Den", start: 10, end: 20, href: "#dealers" },
+  { title: "Przebieralnia", start: 9, end: 23, venue: "przebieralnia" },
+  { title: "Furwalk", start: 12, end: 14.5 },
+];
+
+function renderProgramSpecials(specials, containerId = "programSpecial") {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  container.innerHTML = specials
+    .map((item) => {
+      const href = item.href || (item.venue ? "#venue" : null);
+      const body = `
+        <span class="program-special-title">${escapeHtml(item.title)}</span>
+        <span class="program-special-time">${formatTime(item.start)} - ${formatTime(item.end)}</span>`;
+      return `
+      <li>
+        ${
+          href
+            ? `<a class="program-special-chip" href="${escapeHtml(href)}"${item.venue ? ` data-venue-id="${item.venue}"` : ""}>${body}</a>`
+            : `<div class="program-special-chip">${body}</div>`
+        }
+      </li>`;
+    })
+    .join("");
+
+  container.querySelectorAll("[data-venue-id]").forEach((el) => {
+    el.addEventListener("click", () => {
+      if (selectVenueArea) selectVenueArea(el.dataset.venueId);
+    });
+  });
+}
+
+// Godziny to liczby - po północy liczymy dalej (24 = 00:00, 25 = 01:00), dzięki
+// czemu nocne punkty sortują się na końcu dnia, a nie na jego początku.
+// Opisy i tagi czekają na uzupełnienie: kafelek bez opisu po prostu się nie
+// rozwija.
+const programEvents = [
+  // Sala 1
+  {
+    start: 15,
+    end: 17,
+    title: "Szycie pluszaków",
+    hosts: ["reyk4h"],
+    location: "sala1",
+  },
+  { start: 17, end: 21, title: "E-futro", location: "sala1" },
+
+  // Sala 2
+  {
+    start: 11,
+    end: 12,
+    title: "Muzyka w fandomie",
+    hosts: ["Falconthropy"],
+    location: "sala2",
+  },
+  {
+    start: 17,
+    end: 20,
+    title: "Rysunek",
+    hosts: ["Roborak"],
+    location: "sala2",
+  },
+  {
+    start: 20,
+    end: 22,
+    title: "Długa podróż pociągiem",
+    hosts: ["Semafix"],
+    location: "sala2",
+  },
+
+  // Sala 3
+  {
+    start: 11,
+    end: 12,
+    title: "Zostać swoją fursoną",
+    hosts: ["VladiVerse"],
+    location: "sala3",
+  },
+  {
+    start: 17,
+    end: 18,
+    title: "Voice acting",
+    hosts: ["Yoshi"],
+    location: "sala3",
+  },
+  {
+    start: 18,
+    end: 19,
+    title: "Geocaching",
+    hosts: ["Svartrav"],
+    location: "sala3",
+  },
+  {
+    start: 19,
+    end: 20,
+    title: "Pokojowy Patrol",
+    hosts: ["Legryf"],
+    location: "sala3",
+  },
+  {
+    start: 20,
+    end: 22,
+    title: "Produkcja piwa bezalko",
+    hosts: ["Biksu"],
+    location: "sala3",
+  },
+
+  // Teren (na planie: scena zewnętrzna)
+  { start: 17, end: 19, title: "Warsztaty line dance", location: "teren" },
+  { start: 19, end: 22, title: "Scena DJ", location: "teren" },
+
+  // Scena zewnętrzna (na planie: teren przed halą)
+  {
+    start: 16,
+    end: 17,
+    title: "Inni INNI",
+    hosts: ["Kejos"],
+    location: "scena",
+    highlight: true,
+  },
+  {
+    start: 19,
+    end: 22,
+    title: "Krótkofalarstwo",
+    hosts: ["LycanAnanas"],
+    location: "scena",
+  },
+
+  // Łącznik (na planie: Sala Koncertowa)
+  {
+    start: 18,
+    end: 19,
+    title: "The Generates",
+    location: "lacznik",
+    highlight: true,
+  },
+  { start: 20, end: 21, title: "Shacchi", location: "lacznik" },
+  { start: 21, end: 22, title: "Altro", location: "lacznik" },
+  { start: 22, end: 23, title: "Soren", location: "lacznik" },
+  { start: 23, end: 24, title: "Feniks", location: "lacznik" },
+  { start: 24, end: 25, title: "Tino", location: "lacznik" },
+];
 
 // do wyszukiwania: małe litery bez ogonków (ł nie rozkłada się przez NFD)
 function normalizePl(text) {
@@ -695,14 +915,6 @@ function renderDealerDen(dealers) {
     String(dealer.id) === query ||
     haystacks.get(dealer.id).includes(query);
 
-  function updateScrollFade(el) {
-    const scrollable = el.scrollHeight > el.clientHeight + 2;
-    const atTop = el.scrollTop <= 2;
-    const atEnd = el.scrollTop + el.clientHeight >= el.scrollHeight - 2;
-    el.classList.toggle("is-clip-top", scrollable && !atTop);
-    el.classList.toggle("is-clip-bottom", scrollable && !atEnd);
-  }
-
   function updateFades() {
     updateScrollFade(detail);
     updateScrollFade(list);
@@ -1103,7 +1315,7 @@ function renderWalkMap() {
 // Plan terenu: jedna jednostka to 10 px oryginalnego rysunku, oś Y rośnie w dół.
 // Wszystkie kształty siedzą na tej samej siatce, więc wzajemne proporcje i
 // rozmieszczenie pomieszczeń zgadzają się z planem organizatora.
-const venueViewBox = "45 39 146 109";
+const venueViewBox = "45 39 146 95";
 
 // Obrysy budynków - rysujemy je tylko jako tło, bez klikania. Krawędzie są
 // wspólne ze strefami, które w nich siedzą.
@@ -1111,13 +1323,26 @@ const venueBackdrop = [
   // górna hala z wcięciem na warsztatową i toalety przy północnej ścianie
   { points: "83.8,48.7 147.5,48.7 147.5,42 187.5,42 187.5,84.5 83.8,84.5" },
   // łącznik między halami: wąskie skrzydło z aneksem ConOps wystającym w lewo,
-  // ścięte tam, gdzie przechodzi w wyższą część przy Sali Koncertowej
+  // ścięte po skosie tam, gdzie kończy się zabudowa
   { points: "70.8,84.5 137.7,84.5 130.6,92 70.8,92" },
-  { x: 137.7, y: 84.5, w: 49.8, h: 22 },
-  // dolna hala - krawędź od północy schodzi uskokiem w prawo
+  // skrzydło przy Sali Koncertowej - zaczyna się dopiero na jej zachodniej
+  // ścianie, bo plac przed salą jest pustym terenem, nie zabudową
+  { x: 151.8, y: 84.5, w: 35.7, h: 22 },
+  // dolna hala - krawędź od północy schodzi uskokiem w prawo. Skrócona
+  // względem planu organizatora: w głębi hali nic się nie dzieje, a pełna
+  // długość zabierałaby na planie sporo pustego miejsca.
   {
-    points: "83.8,99 130.6,99 137.7,106.5 187.5,106.5 187.5,146 83.8,146",
+    points: "83.8,99 130.6,99 137.7,106.5 187.5,106.5 187.5,132 83.8,132",
   },
+];
+
+// kategorie sterują kolorem strefy na planie, kropką przy nazwie na liście
+// i legendą - same kolory siedzą w CSS przy [data-venue-cat]
+const venueCategories = [
+  { id: "dd", label: "Dealer's Den" },
+  { id: "program", label: "Program" },
+  { id: "zone", label: "Strefy" },
+  { id: "tech", label: "Zaplecze" },
 ];
 
 // kolejność w tablicy to zarazem kolejność rysowania (duże strefy najpierw,
@@ -1127,87 +1352,110 @@ const venueAreas = [
     id: "teren-przed-hala",
     title: "Teren przed halą",
     label: "Teren\nprzed halą",
+    cat: "zone",
     labelSize: 4.2,
-    shapes: [{ x: 49.5, y: 106.5, w: 34.3, h: 39.5 }],
+    // dół równa się z dolną halą, więc skraca się razem z nią
+    shapes: [{ x: 49.5, y: 106.5, w: 34.3, h: 25.5 }],
+  },
+  {
+    id: "gastro",
+    title: "Gastro",
+    cat: "zone",
+    labelSize: 3.2,
+    shapes: [{ x: 46.5, y: 48.7, w: 19.5, h: 8 }],
   },
   {
     id: "scena-zewnetrzna",
     title: "Scena zewnętrzna",
     label: "Scena\nzewnętrzna",
+    cat: "program",
     labelSize: 3.2,
-    shapes: [{ x: 46.5, y: 68, w: 19.5, h: 18.3 }],
+    shapes: [{ x: 46.5, y: 78, w: 19.5, h: 18.3 }],
   },
   {
     id: "dealers-den",
     title: "Dealer's Den",
     label: "Dealer's Den",
-    labelSize: 5.5,
-    shapes: [{ x: 83.8, y: 48.7, w: 63.7, h: 24.3 }],
+    cat: "dd",
+    // dwa równe rzędy stoisk, a między nimi przejście, którym wchodzi się do
+    // hali - każdy rząd podpisany osobno
+    labelSize: 4.6,
+    shapes: [
+      { x: 83.8, y: 48.7, w: 63.7, h: 8 },
+      { x: 83.8, y: 65, w: 63.7, h: 8 },
+    ],
     link: { href: "#dealers", label: "Zobacz plan Dealer's Denu" },
   },
   {
     id: "przebieralnia",
     title: "Przebieralnia",
+    cat: "tech",
     labelSize: 5,
     shapes: [{ x: 83.8, y: 73, w: 63.7, h: 11.5 }],
   },
   {
-    id: "sala-koncertowa",
-    title: "Sala Koncertowa",
-    label: "Sala\nKoncertowa",
-    labelSize: 3.6,
+    id: "klub-lacznik",
+    title: "Klub Łącznik",
+    label: "Klub\nŁącznik",
+    cat: "program",
+    labelSize: 4.2,
     shapes: [{ x: 151.8, y: 84.5, w: 22.2, h: 22 }],
   },
   {
     id: "prelekcyjna-1",
     title: "Prelekcyjna 1",
-    label: "Prelekcyjna\n1",
-    labelSize: 2,
-    labelRot: -90,
+    label: "Prelek-\ncyjna 1",
+    cat: "program",
+    labelSize: 2.2,
     shapes: [{ x: 178.5, y: 73, w: 9, h: 11.5 }],
   },
   {
     id: "prelekcyjna-2",
     title: "Prelekcyjna 2",
-    label: "Prelekcyjna\n2",
-    labelSize: 2,
-    labelRot: -90,
+    label: "Prelek-\ncyjna 2",
+    cat: "program",
+    labelSize: 2.2,
     shapes: [{ x: 169.5, y: 73, w: 9, h: 11.5 }],
   },
   {
     id: "warsztatowa",
-    title: "Warsztatowa 1",
+    title: "Warsztatowa",
+    cat: "program",
     labelSize: 2.6,
     shapes: [{ x: 147.5, y: 42, w: 18.5, h: 6.7 }],
   },
   {
     id: "conops",
     title: "ConOps",
+    cat: "tech",
     labelSize: 2.6,
     shapes: [{ x: 70.8, y: 84.5, w: 13, h: 7.5 }],
   },
   {
-    id: "retro",
-    title: "Retro",
-    labelSize: 3,
+    id: "strefa-gier",
+    title: "Strefa gier",
+    label: "Strefa\ngier",
+    cat: "zone",
+    labelSize: 2.8,
     shapes: [{ x: 151.8, y: 76.2, w: 12.7, h: 8.3 }],
   },
   {
-    id: "herbaciarnia",
-    title: "Herbaciarnia i chill",
-    label: "Herbata\nchill",
+    id: "strefa-chill",
+    title: "Strefa chill",
+    label: "Strefa\nchill",
+    cat: "zone",
     labelSize: 2.8,
-    labelRot: -90,
     shapes: [{ x: 176, y: 48.7, w: 11.5, h: 14.3 }],
   },
   {
     id: "toalety",
     title: "Toalety",
     label: "WC",
+    cat: "tech",
     labelSize: 3.4,
     shapes: [
       { x: 166, y: 42, w: 21.5, h: 6.7 },
-      { x: 117.5, y: 99, w: 6.5, h: 7.5, labelSize: 2.4 },
+      { x: 108, y: 99, w: 21.5, h: 7.5 },
     ],
   },
 ];
@@ -1234,8 +1482,8 @@ function venueShapeSvg(shape, className) {
   return `<rect class="${className}" x="${shape.x}" y="${shape.y}" width="${shape.w}" height="${shape.h}" rx="0.8"${rot} />`;
 }
 
-// etykieta rysowana osobno dla każdego kształtu strefy (Gastro ma trzy budki,
-// toalety dwa węzły) i obracana razem z nim
+// etykieta rysowana osobno dla każdego kształtu strefy (toalety mają dwa węzły,
+// Dealer's Den dwa rzędy stoisk) i obracana razem z nim
 function venueLabelSvg(area, shape) {
   const at = area.labelAt || venueShapeCenter(shape);
   const size = shape.labelSize || area.labelSize || 3;
@@ -1252,11 +1500,52 @@ function venueLabelSvg(area, shape) {
   return `<text class="venuemap-area-label" x="${at.x}" y="${at.y}" font-size="${size}"${transform}>${tspans}</text>`;
 }
 
+// Wejścia - ten sam znacznik co pod planem Dealer's Denu: zielony trójkąt
+// stojący tuż przy ścianie, którą się wchodzi. Podany punkt to grot, a `rot`
+// obraca strzałkę wokół niego: 0 celuje w prawo, -90 w górę, 90 w dół.
+const venueEntrances = [
+  // z zewnątrz: przejściem między rzędami Dealer's Denu i do przebieralni
+  { x: 83, y: 60.85 },
+  { x: 83, y: 78.75 },
+  // na styku warsztatowej i toalet przy północnej ścianie - wejście do obu
+  { x: 166, y: 49.5, rot: -90 },
+  // toalety w dolnej hali
+  { x: 118.75, y: 98.2, rot: 90 },
+  // sale prelekcyjne
+  { x: 174, y: 72.2, rot: 90 },
+  { x: 183, y: 72.2, rot: 90 },
+  // Klub Łącznik
+  { x: 151, y: 95.5 },
+];
+
+function venueEntranceSvg(entrance) {
+  const size = 3.4;
+  const { x, y } = entrance;
+  const backX = x - size * 0.9;
+  const rot = entrance.rot
+    ? ` transform="rotate(${entrance.rot} ${x} ${y})"`
+    : "";
+  return `<path class="venuemap-entrance" d="M${x} ${y} L${backX} ${y - size / 2} L${backX} ${y + size / 2} Z"${rot} />`;
+}
+
+// punkty programu odbywające się w danej strefie - wiązanie idzie przez
+// programLocations, więc program pozostaje jedynym źródłem godzin i tytułów
+function venueProgramEvents(areaId) {
+  const key = Object.keys(programLocations).find(
+    (name) => programLocations[name].venue === areaId,
+  );
+  if (!key) return [];
+  return programEvents
+    .filter((event) => event.location === key)
+    .sort((a, b) => a.start - b.start);
+}
+
 function renderVenueMap(areas) {
   const svg = document.getElementById("venueMapSvg");
   const list = document.getElementById("venueList");
   const detail = document.getElementById("venueDetail");
   const tooltip = document.getElementById("venueTooltip");
+  const legend = document.getElementById("venueLegend");
   if (!svg || !list || !detail) return;
 
   svg.setAttribute("viewBox", venueViewBox);
@@ -1274,11 +1563,14 @@ function renderVenueMap(areas) {
 
   svg.innerHTML = `
     <g class="venuemap-backdrop">${backdrop}</g>
+    <g class="venuemap-entrances" aria-hidden="true">
+      ${venueEntrances.map(venueEntranceSvg).join("")}
+    </g>
     ${areas
       .map(
         (area) => `
-      <g class="venuemap-area" data-venue-id="${area.id}" tabindex="0" role="button"
-         aria-label="${escapeHtml(area.title)}">
+      <g class="venuemap-area" data-venue-id="${area.id}" data-venue-cat="${area.cat}"
+         tabindex="0" role="button" aria-label="${escapeHtml(area.title)}">
         ${area.shapes.map((shape) => venueShapeSvg(shape, "venuemap-area-shape")).join("")}
         ${area.shapes.map((shape) => venueLabelSvg(area, shape)).join("")}
       </g>`,
@@ -1290,12 +1582,33 @@ function renderVenueMap(areas) {
     .map(
       (area) => `
       <li>
-        <button type="button" class="venuemap-chip" data-venue-id="${area.id}">
-          ${escapeHtml(area.title)}
+        <button type="button" class="venuemap-chip" data-venue-id="${area.id}"
+                data-venue-cat="${area.cat}">
+          <span class="venuemap-chip-label">${escapeHtml(area.title)}</span>
         </button>
       </li>`,
     )
     .join("");
+
+  if (legend) {
+    legend.innerHTML =
+      venueCategories
+        .map(
+          (cat) => `
+        <li class="venuemap-legend-item" data-venue-cat="${cat.id}">
+          <span class="venuemap-legend-swatch" aria-hidden="true"></span>
+          ${escapeHtml(cat.label)}
+        </li>`,
+        )
+        .join("") +
+      `
+        <li class="venuemap-legend-item">
+          <svg class="venuemap-legend-arrow" viewBox="0 0 12 12" aria-hidden="true">
+            <path class="venuemap-entrance" d="M11 6 L2 1 L2 11 Z" />
+          </svg>
+          Wejścia
+        </li>`;
+  }
 
   const zones = new Map();
   const chips = new Map();
@@ -1318,6 +1631,13 @@ function renderVenueMap(areas) {
       applyPolishTypography(detail);
       return;
     }
+    const events = venueProgramEvents(area.id);
+    const links = [
+      ...(area.link ? [area.link] : []),
+      ...(events.length
+        ? [{ href: "#program", label: "Zobacz cały program" }]
+        : []),
+    ];
     detail.innerHTML = `
       <h3>${escapeHtml(area.title)}</h3>
       ${
@@ -1326,12 +1646,42 @@ function renderVenueMap(areas) {
           : `<p class="venuemap-detail-empty">Opis tej strefy pojawi się już niedługo!</p>`
       }
       ${
-        area.link
-          ? `<a class="venuemap-detail-link" href="${escapeHtml(area.link.href)}">${escapeHtml(area.link.label)}</a>`
+        events.length
+          ? `<ul class="venuemap-detail-program">
+              ${events
+                .map(
+                  (event) => `
+                <li>
+                  <span class="venuemap-detail-time">${formatTime(event.start)}</span>
+                  <span>${escapeHtml(event.title)}</span>
+                </li>`,
+                )
+                .join("")}
+            </ul>`
+          : ""
+      }
+      ${
+        links.length
+          ? `<div class="venuemap-detail-links">
+              ${links
+                .map(
+                  (link) =>
+                    `<a class="venuemap-detail-link" href="${escapeHtml(link.href)}">${escapeHtml(link.label)}</a>`,
+                )
+                .join("")}
+            </div>`
           : ""
       }
     `;
     applyPolishTypography(detail);
+
+    // lista punktów programu bywa dłuższa niż panel - wygaszamy tę krawędź,
+    // po której da się jeszcze przewinąć
+    const program = detail.querySelector(".venuemap-detail-program");
+    if (program) {
+      program.addEventListener("scroll", () => updateScrollFade(program));
+      updateScrollFade(program);
+    }
   }
 
   function select(id) {
@@ -1350,19 +1700,40 @@ function renderVenueMap(areas) {
     showDetail(areas.find((area) => area.id === selectedId));
   }
 
+  // strefa z odnośnikiem do własnej sekcji (Dealer's Den) od razu tam prowadzi -
+  // jej opis na planie i tak jest tylko zapowiedzią tamtej sekcji
+  function activate(id) {
+    select(id);
+    const area = areas.find((item) => item.id === id);
+    if (area && area.link && selectedId === id) {
+      window.location.hash = area.link.href;
+    }
+  }
+
+  // wejście z innych sekcji (nagłówki kolumn programu) tylko ustawia
+  // zaznaczenie - w odróżnieniu od kliknięcia w plan nigdy go nie zdejmuje
+  selectVenueArea = (id) => {
+    if (zones.has(id) && selectedId !== id) select(id);
+  };
+
+  // dymek jest pozycjonowany względem całej karty planu (a nie przewijanej
+  // zawartości), więc trzymamy go w jej granicach - inaczej wystawałby poza
+  // stronę i dokładał jej przewijanie w poziomie
   function moveTooltip(event) {
     const box = tooltip.parentElement.getBoundingClientRect();
-    tooltip.style.left = `${event.clientX - box.left}px`;
+    const half = tooltip.offsetWidth / 2;
+    const x = event.clientX - box.left;
+    tooltip.style.left = `${Math.min(Math.max(x, half), box.width - half)}px`;
     tooltip.style.top = `${event.clientY - box.top}px`;
   }
 
   zones.forEach((el, id) => {
     const area = areas.find((a) => a.id === id);
-    el.addEventListener("click", () => select(id));
+    el.addEventListener("click", () => activate(id));
     el.addEventListener("keydown", (event) => {
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
-        select(id);
+        activate(id);
       }
     });
     el.addEventListener("mouseenter", (event) => {
@@ -1383,7 +1754,7 @@ function renderVenueMap(areas) {
 
   chips.forEach((el, id) => {
     el.setAttribute("aria-pressed", "false");
-    el.addEventListener("click", () => select(id));
+    el.addEventListener("click", () => activate(id));
     el.addEventListener("mouseenter", () =>
       zones.get(id).classList.add("hovered"),
     );
@@ -1442,6 +1813,7 @@ const observer = new IntersectionObserver(
 
 document.querySelectorAll(".fade-in").forEach((el) => observer.observe(el));
 
+renderProgramSpecials(programSpecials);
 renderProgram(programEvents);
 renderVenueMap(venueAreas);
 renderDealerDen(dealersList);

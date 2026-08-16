@@ -298,19 +298,8 @@
         <!-- <p class="tickets-subtitle fade-in">
           Naciśnij na kafelek, aby przeczytać szczegóły
         </p> -->
-        <p class="tickets-subtitle fade-in">
-          Jak co roku, możecie spodziewać się całego dnia atrakcji! W programie
-          znajdziecie <strong>warsztaty o fursuitach</strong>,
-          <strong
-            >prelekcje związane ze społecznością oraz na inne tematy</strong
-          >, <strong>koncerty podczas wieczornej imprezy</strong>,
-          <strong>strefy czillu</strong>, naturalnie
-          <strong>fursuitwalka</strong> oraz wiele więcej!
-          <br />
-          <br />
-          Dokładny rozkład jazdy poznacie bliżej wydarzenia!
-        </p>
-        <div class="program-grid" id="programGrid"></div>
+        <ul class="program-special fade-in" id="programSpecial"></ul>
+        <div class="program-grid fade-in" id="programGrid"></div>
       </div>
     </section>
 
@@ -362,12 +351,15 @@
                   role="group"
                   aria-label="Plan terenu Wroof"
                 ></svg>
-                <div class="venuemap-tooltip" id="venueTooltip" hidden></div>
               </div>
             </div>
+            <!-- dymek siedzi poza kontenerem przewijania, żeby ten go nie
+                 przycinał ani nie doliczał do szerokości przewijania -->
+            <div class="venuemap-tooltip" id="venueTooltip" hidden></div>
             <p class="venuemap-hint">
               Przesuń plan w bok, aby zobaczyć całość
             </p>
+            <ul class="venuemap-legend" id="venueLegend"></ul>
           </div>
 
           <div class="venuemap-side">

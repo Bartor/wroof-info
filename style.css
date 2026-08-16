@@ -94,6 +94,9 @@
 
   --fade-size: 2.5rem;
 
+  /* program - stała szerokość kolumny, bo rząd sal przewija się w bok */
+  --program-col-w: 260px;
+
   /* plan terenu - poniżej tej szerokości podpisy pomieszczeń robią się
      nieczytelne, więc plan przewija się w bok zamiast kurczyć */
   --venuemap-detail-h: 15rem;
@@ -596,14 +599,70 @@ h3,
   margin-inline: auto;
 }
 
+/* punkty trwające cały dzień - stoją nad rozkładem i nie przewijają się z nim */
+.program-special {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--sp-3);
+}
+
+.program-special-chip {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-4);
+  background: var(--white);
+  border: 3px solid var(--black);
+  border-radius: var(--radius-pill);
+  corner-shape: var(--squircle);
+  color: inherit;
+  text-decoration: none;
+  transition:
+    transform var(--t-base),
+    box-shadow var(--t-base);
+}
+
+a.program-special-chip:hover,
+a.program-special-chip:focus-visible {
+  transform: translateY(-3px);
+  box-shadow: 6px 6px 0 var(--black);
+  outline: none;
+}
+
+.program-special-title {
+  font-family: "Luckiest Guy UI", "Luckiest Guy", cursive;
+  font-size: var(--fs-md);
+  letter-spacing: var(--ls-base);
+  color: var(--red);
+}
+
+.program-special-time {
+  font-family: "Luckiest Guy UI", "Luckiest Guy", cursive;
+  font-size: var(--fs-sm);
+  letter-spacing: var(--ls-base);
+  color: var(--teal);
+  white-space: nowrap;
+}
+
+/* kolumn jest tyle, ile sal z programem - zostają w jednym rzędzie i przewijają
+   się w bok, bo ściśnięte do szerokości ekranu byłyby nieczytelne.
+   Wyściółka robi miejsce na uniesienie i cień kafelka przy najechaniu. */
 .program-grid {
   display: flex;
+  flex-wrap: nowrap;
   gap: var(--sp-4);
   align-items: flex-start;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  padding: var(--sp-1) var(--sp-2) var(--sp-3);
+  scrollbar-width: thin;
+  scrollbar-color: var(--grey-200) transparent;
 }
 
 .program-column {
-  flex: 1;
+  flex: 0 0 var(--program-col-w);
   min-width: 0;
   display: flex;
   flex-direction: column;
@@ -612,6 +671,7 @@ h3,
 }
 
 .program-location {
+  display: block;
   font-family: "Luckiest Guy UI", "Luckiest Guy", cursive;
   font-size: var(--fs-lg);
   padding: var(--sp-2) var(--sp-3);
@@ -621,6 +681,26 @@ h3,
   corner-shape: var(--squircle);
   text-align: center;
   letter-spacing: var(--ls-base);
+  text-decoration: none;
+  transition: background var(--t-fast);
+}
+
+/* nagłówek kolumny prowadzi na plan terenu; podpowiedź jest widoczna zawsze,
+   bo na dotyku nie ma najechania, którym można by ją odsłonić */
+a.program-location:hover,
+a.program-location:focus-visible {
+  background: var(--teal-dark);
+  outline: none;
+}
+
+.program-location-map {
+  display: block;
+  margin-top: var(--sp-1);
+  font-family: "Lato", Arial, sans-serif;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0;
+  opacity: 0.75;
 }
 
 .program-card {
@@ -640,6 +720,11 @@ h3,
 .program-card:hover {
   transform: translateY(-4px);
   box-shadow: 8px 8px 0 var(--black);
+}
+
+/* kafelek bez opisu i prowadzących nie ma czego pokazać po kliknięciu */
+.program-card:not([data-expandable]) {
+  cursor: default;
 }
 
 .program-card-time {
@@ -1307,6 +1392,46 @@ h3,
   );
 }
 
+/* to samo dla przewijania w poziomie (program) */
+.is-clip-left {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 var(--fade-size)
+  );
+  mask-image: linear-gradient(to right, transparent, #000 var(--fade-size));
+}
+
+.is-clip-right {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    #000 calc(100% - var(--fade-size)),
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    #000 calc(100% - var(--fade-size)),
+    transparent
+  );
+}
+
+.is-clip-left.is-clip-right {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 var(--fade-size),
+    #000 calc(100% - var(--fade-size)),
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 var(--fade-size),
+    #000 calc(100% - var(--fade-size)),
+    transparent
+  );
+}
+
 /* stoisko bez opisu - wyśrodkowana notka w wolnym miejscu panelu */
 .denmap-detail-empty {
   flex: 1 1 auto;
@@ -1474,6 +1599,7 @@ h3,
 }
 
 .venuemap-plan {
+  position: relative;
   background: var(--white);
   border-radius: var(--radius-lg);
   corner-shape: var(--squircle);
@@ -1491,7 +1617,6 @@ h3,
 }
 
 .venuemap-plan-inner {
-  position: relative;
   min-width: var(--venuemap-min-w);
 }
 
@@ -1511,6 +1636,36 @@ h3,
   }
 }
 
+.venuemap-legend {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--sp-2) var(--sp-5);
+  margin-top: var(--sp-3);
+  color: var(--grey-700);
+  font-size: var(--fs-sm);
+}
+
+.venuemap-legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.venuemap-legend-swatch {
+  width: 0.95rem;
+  height: 0.95rem;
+  border-radius: var(--radius-sm);
+  background: var(--cat-fill);
+  border: 2px var(--cat-line-style) var(--cat-line);
+}
+
+.venuemap-legend-arrow {
+  width: 0.95rem;
+  height: 0.95rem;
+}
+
 .venuemap-svg {
   display: block;
   width: 100%;
@@ -1523,14 +1678,58 @@ h3,
   stroke-width: 0.5;
 }
 
+/* kategorie stref - jeden zestaw zmiennych ubiera plan, listę i legendę.
+   Strefy swobodne (chill, retro, teren) nie są osobnym pomieszczeniem, więc
+   zamiast wypełnienia dostają przerywany obrys. */
+[data-venue-cat] {
+  --cat-fill: var(--teal);
+  --cat-fill-strong: var(--teal-dark);
+  --cat-line: var(--black);
+  --cat-line-w: 0.4;
+  --cat-line-style: solid;
+  --cat-dash: none;
+  --cat-label: var(--white);
+  /* kolor nazwy na białej karcie legendy i na wybranym przycisku listy */
+  --cat-ink: var(--teal-dark);
+}
+
+[data-venue-cat="program"] {
+  --cat-fill: var(--red);
+  --cat-fill-strong: var(--red-dark);
+  --cat-ink: var(--red-dark);
+}
+
+[data-venue-cat="tech"] {
+  --cat-fill: var(--grey-700);
+  --cat-fill-strong: var(--black);
+  --cat-ink: var(--grey-700);
+}
+
+[data-venue-cat="zone"] {
+  --cat-fill: transparent;
+  --cat-fill-strong: rgba(229, 184, 90, 0.28);
+  --cat-line: var(--gold-dark);
+  --cat-line-w: 0.7;
+  --cat-line-style: dashed;
+  --cat-dash: 2.4 1.6;
+  --cat-label: var(--grey-700);
+  --cat-ink: var(--gold-dark);
+}
+
+/* znaczniki wejść - ten sam zielony trójkąt co pod planem Dealer's Denu */
+.venuemap-entrance {
+  fill: var(--green);
+}
+
 .venuemap-area {
   cursor: pointer;
 }
 
 .venuemap-area-shape {
-  fill: var(--teal);
-  stroke: var(--black);
-  stroke-width: 0.4;
+  fill: var(--cat-fill);
+  stroke: var(--cat-line);
+  stroke-width: var(--cat-line-w);
+  stroke-dasharray: var(--cat-dash);
   transition: fill var(--t-fast);
 }
 
@@ -1538,7 +1737,7 @@ h3,
 .venuemap-area-label {
   font-family: "Lato", Arial, sans-serif;
   font-weight: 700;
-  fill: var(--white);
+  fill: var(--cat-label);
   text-anchor: middle;
   dominant-baseline: central;
   pointer-events: none;
@@ -1547,12 +1746,16 @@ h3,
 
 .venuemap-area:hover .venuemap-area-shape,
 .venuemap-area.hovered .venuemap-area-shape {
-  fill: var(--teal-dark);
+  fill: var(--cat-fill-strong);
 }
 
+/* wybór musi odróżniać się od najechania, więc oprócz ciemniejszego
+   wypełnienia strefa dostaje grubszy, ciągły obrys */
 .venuemap-area.selected .venuemap-area-shape {
-  fill: var(--red);
-  stroke-width: 0.9;
+  fill: var(--cat-fill-strong);
+  stroke: var(--black);
+  stroke-width: 1.1;
+  stroke-dasharray: none;
 }
 
 .venuemap-area:focus {
@@ -1610,6 +1813,37 @@ h3,
   opacity: 0.8;
 }
 
+/* punkty programu tej strefy - lista bywa długa, więc przewija się w miejscu
+   zamiast rozpychać sekcję */
+.venuemap-detail-program {
+  list-style: none;
+  margin-top: var(--sp-3);
+  max-height: 9rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+
+.venuemap-detail-program li {
+  display: flex;
+  gap: var(--sp-3);
+  padding: var(--sp-1) 0;
+  font-size: var(--fs-md);
+  line-height: var(--lh-snug);
+}
+
+.venuemap-detail-time {
+  flex: 0 0 3.5rem;
+  font-weight: 700;
+}
+
+.venuemap-detail-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+}
+
 .venuemap-detail-link {
   display: inline-block;
   margin-top: var(--sp-4);
@@ -1661,6 +1895,9 @@ h3,
 
 .venuemap-chip {
   width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
   padding: var(--sp-2) var(--sp-3);
   border: 2px solid var(--border-soft);
   border-radius: var(--radius-pill);
@@ -1671,12 +1908,28 @@ h3,
   text-align: left;
   cursor: pointer;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   transition:
     background var(--t-fast),
     color var(--t-fast),
     border-color var(--t-fast);
+}
+
+.venuemap-chip-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* kropka powtarza kolor strefy z planu; na tealowym tle sekcji ratuje ją
+   obrys w kolorze obrysu z planu */
+.venuemap-chip::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  background: var(--cat-fill);
+  border: 2px var(--cat-line-style) var(--cat-line);
 }
 
 .venuemap-chip:hover,
@@ -1689,7 +1942,7 @@ h3,
 
 .venuemap-chip.selected {
   background: var(--white);
-  color: var(--red);
+  color: var(--cat-ink);
   border-color: var(--white);
 }
 
@@ -2222,14 +2475,8 @@ h3,
     --denmap-plan-w: 290px;
     --denmap-detail-h: 13rem;
     --walkmap-h: 380px;
-  }
-
-  .program-grid {
-    flex-direction: column;
-  }
-
-  .program-column {
-    width: 100%;
+    /* rząd sal zostaje w poziomie także na telefonie, tylko kolumny są węższe */
+    --program-col-w: 230px;
   }
 
   .nav-links {
