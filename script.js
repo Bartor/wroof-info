@@ -170,25 +170,6 @@ function fixPolishWidow(element) {
   }
 }
 
-// Wygasza tę krawędź przewijanego kontenera, po której da się jeszcze
-// przewinąć - używają tego listy w Dealer's Denie, program i lista punktów
-// programu na planie terenu. `axis: "x"` przełącza na przewijanie w poziomie.
-function updateScrollFade(el, axis = "y") {
-  const horizontal = axis === "x";
-  const size = horizontal ? el.clientWidth : el.clientHeight;
-  const total = horizontal ? el.scrollWidth : el.scrollHeight;
-  const offset = horizontal ? el.scrollLeft : el.scrollTop;
-  const scrollable = total > size + 2;
-  el.classList.toggle(
-    horizontal ? "is-clip-left" : "is-clip-top",
-    scrollable && offset > 2,
-  );
-  el.classList.toggle(
-    horizontal ? "is-clip-right" : "is-clip-bottom",
-    scrollable && offset + size < total - 2,
-  );
-}
-
 function applyPolishTypography(root = document.body) {
   root.querySelectorAll(POLISH_TYPOGRAPHY_SELECTOR).forEach((block) => {
     fixPolishOrphans(block);
@@ -267,12 +248,6 @@ function renderProgram(events, containerId = "programGrid") {
       if (selectVenueArea) selectVenueArea(el.dataset.venueId);
     });
   });
-
-  // kolumny stoją w jednym rzędzie i przewijają się w bok
-  const updateProgramFade = () => updateScrollFade(container, "x");
-  container.addEventListener("scroll", updateProgramFade);
-  window.addEventListener("resize", updateProgramFade);
-  updateProgramFade();
 
   // wejście z planu terenu: przewijamy rząd do kolumny tej sali i podświetlamy
   // ją na chwilę, żeby było widać, o którą chodzi
@@ -948,17 +923,10 @@ function renderDealerDen(dealers) {
     String(dealer.id) === query ||
     haystacks.get(dealer.id).includes(query);
 
-  function updateFades() {
-    updateScrollFade(detail);
-    updateScrollFade(list);
-  }
-
   function showDetail(dealer) {
     detail.scrollTop = 0;
     detail.classList.toggle("is-intro", !dealer);
     if (!dealer) {
-      // wstęp zawsze mieści się w panelu, więc nie ma czego wygaszać
-      detail.classList.remove("is-clip-top", "is-clip-bottom");
       detail.innerHTML = intro;
       applyPolishTypography(detail);
       return;
@@ -985,7 +953,6 @@ function renderDealerDen(dealers) {
       }
     `;
     applyPolishTypography(detail);
-    updateScrollFade(detail);
   }
 
   function scrollChipIntoView(chip) {
@@ -1009,7 +976,6 @@ function renderDealerDen(dealers) {
     });
     showDetail(dealers.find((d) => d.id === selectedId));
     if (scroll && selectedId) scrollChipIntoView(chips.get(selectedId));
-    updateScrollFade(list);
   }
 
   function applyFilter() {
@@ -1029,7 +995,6 @@ function renderDealerDen(dealers) {
     } else if (visible && empty) {
       empty.remove();
     }
-    updateScrollFade(list);
   }
 
   function moveTooltip(event) {
@@ -1079,10 +1044,6 @@ function renderDealerDen(dealers) {
     );
   });
 
-  detail.addEventListener("scroll", () => updateScrollFade(detail));
-  list.addEventListener("scroll", () => updateScrollFade(list));
-  window.addEventListener("resize", updateFades);
-
   if (search) {
     search.addEventListener("input", () => {
       query = normalizePl(search.value.trim());
@@ -1091,7 +1052,6 @@ function renderDealerDen(dealers) {
   }
 
   showDetail(null);
-  updateScrollFade(list);
 }
 
 // Trasa fursuitwalka - jedna pętla z zajezdni Dąbie pod Halę Stulecia i z

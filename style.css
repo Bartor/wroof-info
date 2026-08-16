@@ -1374,85 +1374,80 @@ a.program-location:focus-visible {
   border-color: var(--white);
 }
 
-/* treść wychodząca poza panel wygasza się na krawędzi, po której da się
-   jeszcze przewinąć - zamiast urywać się w połowie wiersza */
-.is-clip-top {
-  -webkit-mask-image: linear-gradient(
-    to bottom,
-    transparent,
-    #000 var(--fade-size)
-  );
-  mask-image: linear-gradient(to bottom, transparent, #000 var(--fade-size));
+/* Treść wychodząca poza panel wygasza się na tej krawędzi, po której da się
+   jeszcze przewinąć - zamiast urywać się w połowie wiersza.
+
+   Postęp bierzemy wprost z przewijania elementu (oś czasu `scroll(self ...)`),
+   więc nie ma tu nasłuchiwania ani przeliczania w JS. Dwie animacje: pierwsza
+   rozsuwa wygaszenie na początku, gdy odjedziemy od krawędzi, druga zsuwa je
+   na końcu, gdy do niej dojedziemy. Kiedy nie ma czego przewijać, oś czasu jest
+   nieaktywna, animacje nie działają i maska zostaje pełna - czyli dokładnie to,
+   czego chcemy.
+
+   Wygaszenia trzymamy w zarejestrowanych zmiennych, bo tylko takie potrafią się
+   animować - zwykłe `--zmienne` przeskakują między wartościami. */
+@property --fade-start {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
 }
 
-.is-clip-bottom {
-  -webkit-mask-image: linear-gradient(
-    to bottom,
-    #000 calc(100% - var(--fade-size)),
-    transparent
-  );
-  mask-image: linear-gradient(
-    to bottom,
-    #000 calc(100% - var(--fade-size)),
-    transparent
-  );
+@property --fade-end {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
 }
 
-.is-clip-top.is-clip-bottom {
-  -webkit-mask-image: linear-gradient(
-    to bottom,
-    transparent,
-    #000 var(--fade-size),
-    #000 calc(100% - var(--fade-size)),
-    transparent
-  );
-  mask-image: linear-gradient(
-    to bottom,
-    transparent,
-    #000 var(--fade-size),
-    #000 calc(100% - var(--fade-size)),
-    transparent
-  );
+@keyframes scroll-fade-start {
+  from {
+    --fade-start: 0px;
+  }
+  to {
+    --fade-start: var(--fade-size);
+  }
 }
 
-/* to samo dla przewijania w poziomie (program) */
-.is-clip-left {
-  -webkit-mask-image: linear-gradient(
-    to right,
-    transparent,
-    #000 var(--fade-size)
-  );
-  mask-image: linear-gradient(to right, transparent, #000 var(--fade-size));
+@keyframes scroll-fade-end {
+  from {
+    --fade-end: var(--fade-size);
+  }
+  to {
+    --fade-end: 0px;
+  }
 }
 
-.is-clip-right {
-  -webkit-mask-image: linear-gradient(
-    to right,
-    #000 calc(100% - var(--fade-size)),
-    transparent
-  );
-  mask-image: linear-gradient(
-    to right,
-    #000 calc(100% - var(--fade-size)),
-    transparent
-  );
-}
+@supports (animation-timeline: scroll()) {
+  .scroll-fade-y,
+  .scroll-fade-x {
+    animation:
+      scroll-fade-start linear both,
+      scroll-fade-end linear both;
+    animation-range:
+      0 var(--fade-size),
+      calc(100% - var(--fade-size)) 100%;
+  }
 
-.is-clip-left.is-clip-right {
-  -webkit-mask-image: linear-gradient(
-    to right,
-    transparent,
-    #000 var(--fade-size),
-    #000 calc(100% - var(--fade-size)),
-    transparent
-  );
-  mask-image: linear-gradient(
-    to right,
-    transparent,
-    #000 var(--fade-size),
-    #000 calc(100% - var(--fade-size)),
-    transparent
-  );
+  .scroll-fade-y {
+    animation-timeline: scroll(self block), scroll(self block);
+    mask-image: linear-gradient(
+      to bottom,
+      transparent 0,
+      #000 var(--fade-start),
+      #000 calc(100% - var(--fade-end)),
+      transparent 100%
+    );
+  }
+
+  .scroll-fade-x {
+    animation-timeline: scroll(self inline), scroll(self inline);
+    mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 var(--fade-start),
+      #000 calc(100% - var(--fade-end)),
+      transparent 100%
+    );
+  }
 }
 
 /* stoisko bez opisu - wyśrodkowana notka w wolnym miejscu panelu */
