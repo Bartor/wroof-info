@@ -75,6 +75,7 @@
         <li><a href="#tickets" class="nav-link">Bilety</a></li>
         <li><a href="#program" class="nav-link">Program</a></li>
         <li><a href="#walk" class="nav-link">Fursuitwalk</a></li>
+        <li><a href="#venue" class="nav-link">Mapa</a></li>
         <li><a href="#dealers" class="nav-link">Wystawcy</a></li>
         <li><a href="#faq" class="nav-link">FAQ</a></li>
         <li><a href="#contact" class="nav-link">Kontakt</a></li>
@@ -342,6 +343,40 @@
               a fontannę. Wracamy od parkingu Hali ulicą Kopernika - w obie
               strony to około 3,1 km.
             </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section venue" id="venue">
+      <div class="venue-content">
+        <h2 class="fade-in">Mapa terenu</h2>
+        <div class="venuemap fade-in" id="venueMap">
+          <div class="venuemap-plan">
+            <div class="venuemap-plan-scroll">
+              <div class="venuemap-plan-inner">
+                <svg
+                  id="venueMapSvg"
+                  class="venuemap-svg"
+                  preserveAspectRatio="xMidYMid meet"
+                  role="group"
+                  aria-label="Plan terenu Wroof"
+                ></svg>
+                <div class="venuemap-tooltip" id="venueTooltip" hidden></div>
+              </div>
+            </div>
+            <p class="venuemap-hint">
+              Przesuń plan w bok, aby zobaczyć całość
+            </p>
+          </div>
+
+          <div class="venuemap-side">
+            <div
+              class="venuemap-detail"
+              id="venueDetail"
+              aria-live="polite"
+            ></div>
+            <ul class="venuemap-list" id="venueList"></ul>
           </div>
         </div>
       </div>

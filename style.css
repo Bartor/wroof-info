@@ -93,6 +93,12 @@
   --walkmap-w: 620px;
 
   --fade-size: 2.5rem;
+
+  /* plan terenu - poniżej tej szerokości podpisy pomieszczeń robią się
+     nieczytelne, więc plan przewija się w bok zamiast kurczyć */
+  --venuemap-detail-h: 15rem;
+  --venuemap-list-w: 360px;
+  --venuemap-min-w: 600px;
 }
 
 /*
@@ -299,6 +305,7 @@ h3,
 .about-content,
 .program-content,
 .dealers-content,
+.venue-content,
 .tickets-content,
 .merch-content,
 .contact-content {
@@ -313,6 +320,7 @@ h3,
 .about-content h2,
 .program-content h2,
 .dealers-content h2,
+.venue-content h2,
 .tickets-content h2,
 .merch-content h2,
 .contact-content h2,
@@ -1448,6 +1456,243 @@ h3,
   white-space: nowrap;
 }
 
+/* plan terenu */
+.venue {
+  background: var(--teal);
+  color: var(--white);
+}
+
+.venue-content h2 {
+  text-align: center;
+  margin-bottom: var(--sp-6);
+}
+
+.venuemap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+}
+
+.venuemap-plan {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  corner-shape: var(--squircle);
+  padding: var(--sp-4);
+  box-shadow: var(--shadow-lg);
+}
+
+/* na wąskich ekranach plan zostaje czytelny i przewija się w bok zamiast
+   kurczyć podpisy do nieczytelnego rozmiaru */
+.venuemap-plan-scroll {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--grey-200) transparent;
+}
+
+.venuemap-plan-inner {
+  position: relative;
+  min-width: var(--venuemap-min-w);
+}
+
+/* podpowiedź tylko wtedy, gdy plan faktycznie nie mieści się w karcie
+   (--venuemap-min-w + wyściółka karty i sekcji) */
+.venuemap-hint {
+  display: none;
+  margin-top: var(--sp-2);
+  text-align: center;
+  color: var(--grey-500);
+  font-size: var(--fs-sm);
+}
+
+@media (max-width: 700px) {
+  .venuemap-hint {
+    display: block;
+  }
+}
+
+.venuemap-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.venuemap-backdrop-shape {
+  fill: var(--grey-100);
+  stroke: var(--grey-200);
+  stroke-width: 0.5;
+}
+
+.venuemap-area {
+  cursor: pointer;
+}
+
+.venuemap-area-shape {
+  fill: var(--teal);
+  stroke: var(--black);
+  stroke-width: 0.4;
+  transition: fill var(--t-fast);
+}
+
+/* rozmiary wewnątrz SVG są w jednostkach viewBox, nie w skali strony */
+.venuemap-area-label {
+  font-family: "Lato", Arial, sans-serif;
+  font-weight: 700;
+  fill: var(--white);
+  text-anchor: middle;
+  dominant-baseline: central;
+  pointer-events: none;
+  user-select: none;
+}
+
+.venuemap-area:hover .venuemap-area-shape,
+.venuemap-area.hovered .venuemap-area-shape {
+  fill: var(--teal-dark);
+}
+
+.venuemap-area.selected .venuemap-area-shape {
+  fill: var(--red);
+  stroke-width: 0.9;
+}
+
+.venuemap-area:focus {
+  outline: none;
+}
+
+.venuemap-area:focus-visible .venuemap-area-shape {
+  stroke: var(--gold);
+  stroke-width: 1.2;
+}
+
+.venuemap-tooltip {
+  position: absolute;
+  z-index: 5;
+  padding: var(--sp-1) var(--sp-2);
+  background: var(--black);
+  color: var(--white);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  pointer-events: none;
+  white-space: nowrap;
+  transform: translate(-50%, -130%);
+  box-shadow: var(--shadow-sm);
+}
+
+/* lista stref ma stałą liczbę wierszy, więc to ona wyznacza wysokość rzędu -
+   zmiana opisu nie przesuwa układu */
+.venuemap-side {
+  display: flex;
+  gap: var(--sp-6);
+  align-items: stretch;
+  min-height: var(--venuemap-detail-h);
+}
+
+.venuemap-detail {
+  flex: 1 1 0;
+  min-width: 0;
+  padding-right: var(--sp-2);
+}
+
+.venuemap-detail h3 {
+  font-family: "Luckiest Guy UI", "Luckiest Guy", cursive;
+  font-size: var(--fs-2xl);
+  letter-spacing: var(--ls-base);
+  margin-bottom: var(--sp-3);
+}
+
+.venuemap-detail p {
+  font-size: var(--fs-md);
+  line-height: var(--lh-body);
+}
+
+.venuemap-detail-empty {
+  opacity: 0.8;
+}
+
+.venuemap-detail-link {
+  display: inline-block;
+  margin-top: var(--sp-4);
+  padding: var(--sp-2) var(--sp-4);
+  border: 2px solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  background: var(--surface-soft);
+  color: var(--white);
+  font-weight: 700;
+  text-decoration: none;
+  transition:
+    background var(--t-fast),
+    border-color var(--t-fast);
+}
+
+.venuemap-detail-link:hover,
+.venuemap-detail-link:focus-visible {
+  background: var(--white);
+  border-color: var(--white);
+  color: var(--teal);
+  outline: none;
+}
+
+.venuemap-detail.is-intro {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.venuemap-intro p {
+  font-size: var(--fs-lg);
+  line-height: var(--lh-snug);
+}
+
+.venuemap-intro-hint {
+  margin-top: var(--sp-3);
+  font-size: var(--fs-sm) !important;
+  opacity: 0.85;
+}
+
+.venuemap-list {
+  flex: 0 0 var(--venuemap-list-w);
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-2);
+  align-content: start;
+}
+
+.venuemap-chip {
+  width: 100%;
+  padding: var(--sp-2) var(--sp-3);
+  border: 2px solid var(--border-soft);
+  border-radius: var(--radius-pill);
+  background: var(--surface-soft);
+  color: var(--white);
+  font-family: inherit;
+  font-size: var(--fs-sm);
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition:
+    background var(--t-fast),
+    color var(--t-fast),
+    border-color var(--t-fast);
+}
+
+.venuemap-chip:hover,
+.venuemap-chip.hovered,
+.venuemap-chip:focus-visible {
+  background: var(--surface-strong);
+  border-color: var(--white);
+  outline: none;
+}
+
+.venuemap-chip.selected {
+  background: var(--white);
+  color: var(--red);
+  border-color: var(--white);
+}
+
 /* tickets */
 .tickets {
   background: var(--teal);
@@ -2069,9 +2314,29 @@ h3,
     height: 20rem;
   }
 
+  .venuemap-side {
+    flex-direction: column;
+    gap: var(--sp-5);
+  }
+
+  .venuemap-list {
+    flex: 0 0 auto;
+    width: 100%;
+  }
+
+  .venuemap-side {
+    min-height: 0;
+  }
+
   .faq-item.active .faq-answer {
     max-height: 500px;
     padding-bottom: var(--sp-5);
+  }
+}
+
+@media (max-width: 600px) {
+  .venuemap-list {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 

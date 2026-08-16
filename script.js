@@ -15,7 +15,7 @@ function formatHosts(hosts) {
 }
 
 const POLISH_TYPOGRAPHY_SELECTOR =
-  "p, li, dd, dt, blockquote, figcaption, .badge-note, .program-card-body, .program-card-host, .faq-answer, .denmap-intro, .denmap-detail, .about-text, .ticket-card";
+  "p, li, dd, dt, blockquote, figcaption, .badge-note, .program-card-body, .program-card-host, .faq-answer, .denmap-intro, .denmap-detail, .venuemap-intro, .venuemap-detail, .about-text, .ticket-card";
 
 function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -1100,6 +1100,305 @@ function renderWalkMap() {
   }
 }
 
+// Plan terenu: jedna jednostka to 10 px oryginalnego rysunku, oś Y rośnie w dół.
+// Wszystkie kształty siedzą na tej samej siatce, więc wzajemne proporcje i
+// rozmieszczenie pomieszczeń zgadzają się z planem organizatora.
+const venueViewBox = "45 39 146 109";
+
+// Obrysy budynków - rysujemy je tylko jako tło, bez klikania. Krawędzie są
+// wspólne ze strefami, które w nich siedzą.
+const venueBackdrop = [
+  // górna hala z wcięciem na warsztatową i toalety przy północnej ścianie
+  { points: "83.8,48.7 147.5,48.7 147.5,42 187.5,42 187.5,84.5 83.8,84.5" },
+  // łącznik między halami: wąskie skrzydło z aneksem ConOps wystającym w lewo,
+  // ścięte tam, gdzie przechodzi w wyższą część przy Sali Koncertowej
+  { points: "70.8,84.5 137.7,84.5 130.6,92 70.8,92" },
+  { x: 137.7, y: 84.5, w: 49.8, h: 22 },
+  // dolna hala - krawędź od północy schodzi uskokiem w prawo
+  {
+    points: "83.8,99 130.6,99 137.7,106.5 187.5,106.5 187.5,146 83.8,146",
+  },
+];
+
+// kolejność w tablicy to zarazem kolejność rysowania (duże strefy najpierw,
+// mniejsze lądują na nich) i kolejność listy obok planu
+const venueAreas = [
+  {
+    id: "teren-przed-hala",
+    title: "Teren przed halą",
+    label: "Teren\nprzed halą",
+    labelSize: 4.2,
+    shapes: [{ x: 49.5, y: 106.5, w: 34.3, h: 39.5 }],
+  },
+  {
+    id: "scena-zewnetrzna",
+    title: "Scena zewnętrzna",
+    label: "Scena\nzewnętrzna",
+    labelSize: 3.2,
+    shapes: [{ x: 46.5, y: 68, w: 19.5, h: 18.3 }],
+  },
+  {
+    id: "dealers-den",
+    title: "Dealer's Den",
+    label: "Dealer's Den",
+    labelSize: 5.5,
+    shapes: [{ x: 83.8, y: 48.7, w: 63.7, h: 24.3 }],
+    link: { href: "#dealers", label: "Zobacz plan Dealer's Denu" },
+  },
+  {
+    id: "przebieralnia",
+    title: "Przebieralnia",
+    labelSize: 5,
+    shapes: [{ x: 83.8, y: 73, w: 63.7, h: 11.5 }],
+  },
+  {
+    id: "sala-koncertowa",
+    title: "Sala Koncertowa",
+    label: "Sala\nKoncertowa",
+    labelSize: 3.6,
+    shapes: [{ x: 151.8, y: 84.5, w: 22.2, h: 22 }],
+  },
+  {
+    id: "prelekcyjna-1",
+    title: "Prelekcyjna 1",
+    label: "Prelekcyjna\n1",
+    labelSize: 2,
+    labelRot: -90,
+    shapes: [{ x: 178.5, y: 73, w: 9, h: 11.5 }],
+  },
+  {
+    id: "prelekcyjna-2",
+    title: "Prelekcyjna 2",
+    label: "Prelekcyjna\n2",
+    labelSize: 2,
+    labelRot: -90,
+    shapes: [{ x: 169.5, y: 73, w: 9, h: 11.5 }],
+  },
+  {
+    id: "warsztatowa",
+    title: "Warsztatowa 1",
+    labelSize: 2.6,
+    shapes: [{ x: 147.5, y: 42, w: 18.5, h: 6.7 }],
+  },
+  {
+    id: "conops",
+    title: "ConOps",
+    labelSize: 2.6,
+    shapes: [{ x: 70.8, y: 84.5, w: 13, h: 7.5 }],
+  },
+  {
+    id: "retro",
+    title: "Retro",
+    labelSize: 3,
+    shapes: [{ x: 151.8, y: 76.2, w: 12.7, h: 8.3 }],
+  },
+  {
+    id: "herbaciarnia",
+    title: "Herbaciarnia i chill",
+    label: "Herbata\nchill",
+    labelSize: 2.8,
+    labelRot: -90,
+    shapes: [{ x: 176, y: 48.7, w: 11.5, h: 14.3 }],
+  },
+  {
+    id: "toalety",
+    title: "Toalety",
+    label: "WC",
+    labelSize: 3.4,
+    shapes: [
+      { x: 166, y: 42, w: 21.5, h: 6.7 },
+      { x: 117.5, y: 99, w: 6.5, h: 7.5, labelSize: 2.4 },
+    ],
+  },
+];
+
+function venueShapeCenter(shape) {
+  if (shape.points) {
+    const nums = shape.points.trim().split(/[\s,]+/).map(Number);
+    const xs = nums.filter((_, i) => i % 2 === 0);
+    const ys = nums.filter((_, i) => i % 2 === 1);
+    return {
+      x: (Math.min(...xs) + Math.max(...xs)) / 2,
+      y: (Math.min(...ys) + Math.max(...ys)) / 2,
+    };
+  }
+  return { x: shape.x + shape.w / 2, y: shape.y + shape.h / 2 };
+}
+
+function venueShapeSvg(shape, className) {
+  if (shape.points) {
+    return `<polygon class="${className}" points="${shape.points}" />`;
+  }
+  const c = venueShapeCenter(shape);
+  const rot = shape.rot ? ` transform="rotate(${shape.rot} ${c.x} ${c.y})"` : "";
+  return `<rect class="${className}" x="${shape.x}" y="${shape.y}" width="${shape.w}" height="${shape.h}" rx="0.8"${rot} />`;
+}
+
+// etykieta rysowana osobno dla każdego kształtu strefy (Gastro ma trzy budki,
+// toalety dwa węzły) i obracana razem z nim
+function venueLabelSvg(area, shape) {
+  const at = area.labelAt || venueShapeCenter(shape);
+  const size = shape.labelSize || area.labelSize || 3;
+  const rot = (shape.rot || 0) + (area.labelRot || 0);
+  const lines = (area.label || area.title).split("\n");
+  const step = size * 1.05;
+  const transform = rot ? ` transform="rotate(${rot} ${at.x} ${at.y})"` : "";
+  const tspans = lines
+    .map(
+      (line, i) =>
+        `<tspan x="${at.x}" dy="${i === 0 ? -((lines.length - 1) * step) / 2 : step}">${escapeHtml(line)}</tspan>`,
+    )
+    .join("");
+  return `<text class="venuemap-area-label" x="${at.x}" y="${at.y}" font-size="${size}"${transform}>${tspans}</text>`;
+}
+
+function renderVenueMap(areas) {
+  const svg = document.getElementById("venueMapSvg");
+  const list = document.getElementById("venueList");
+  const detail = document.getElementById("venueDetail");
+  const tooltip = document.getElementById("venueTooltip");
+  if (!svg || !list || !detail) return;
+
+  svg.setAttribute("viewBox", venueViewBox);
+
+  const intro = `
+    <div class="venuemap-intro">
+      <p>Cały Wroof mieści się w jednym miejscu &ndash; od terenu przed halą
+      i sceny zewnętrznej, aż po halę z Dealer&rsquo;s Denem i Salą Koncertową.</p>
+      <p class="venuemap-intro-hint">Wybierz strefę na planie lub z listy, aby dowiedzieć się, co się w niej dzieje</p>
+    </div>`;
+
+  const backdrop = venueBackdrop
+    .map((shape) => venueShapeSvg(shape, "venuemap-backdrop-shape"))
+    .join("");
+
+  svg.innerHTML = `
+    <g class="venuemap-backdrop">${backdrop}</g>
+    ${areas
+      .map(
+        (area) => `
+      <g class="venuemap-area" data-venue-id="${area.id}" tabindex="0" role="button"
+         aria-label="${escapeHtml(area.title)}">
+        ${area.shapes.map((shape) => venueShapeSvg(shape, "venuemap-area-shape")).join("")}
+        ${area.shapes.map((shape) => venueLabelSvg(area, shape)).join("")}
+      </g>`,
+      )
+      .join("")}
+  `;
+
+  list.innerHTML = areas
+    .map(
+      (area) => `
+      <li>
+        <button type="button" class="venuemap-chip" data-venue-id="${area.id}">
+          ${escapeHtml(area.title)}
+        </button>
+      </li>`,
+    )
+    .join("");
+
+  const zones = new Map();
+  const chips = new Map();
+  svg
+    .querySelectorAll(".venuemap-area")
+    .forEach((el) => zones.set(el.dataset.venueId, el));
+  list
+    .querySelectorAll(".venuemap-chip")
+    .forEach((el) => chips.set(el.dataset.venueId, el));
+
+  let selectedId = null;
+  const drawOrder = areas.map((area) => zones.get(area.id));
+  const canHover = window.matchMedia("(hover: hover)").matches;
+
+  function showDetail(area) {
+    detail.scrollTop = 0;
+    detail.classList.toggle("is-intro", !area);
+    if (!area) {
+      detail.innerHTML = intro;
+      applyPolishTypography(detail);
+      return;
+    }
+    detail.innerHTML = `
+      <h3>${escapeHtml(area.title)}</h3>
+      ${
+        area.description
+          ? `<p>${escapeHtml(area.description)}</p>`
+          : `<p class="venuemap-detail-empty">Opis tej strefy pojawi się już niedługo!</p>`
+      }
+      ${
+        area.link
+          ? `<a class="venuemap-detail-link" href="${escapeHtml(area.link.href)}">${escapeHtml(area.link.label)}</a>`
+          : ""
+      }
+    `;
+    applyPolishTypography(detail);
+  }
+
+  function select(id) {
+    selectedId = selectedId === id ? null : id;
+    areas.forEach((area) => {
+      const isSelected = area.id === selectedId;
+      zones.get(area.id).classList.toggle("selected", isSelected);
+      chips.get(area.id).classList.toggle("selected", isSelected);
+      chips.get(area.id).setAttribute("aria-pressed", String(isSelected));
+    });
+    // SVG nie zna z-index, więc wybraną strefę przenosimy na koniec - wcześniej
+    // przywracamy pierwotną kolejność, żeby po odznaczeniu duża strefa nie
+    // została nad mniejszymi, które na niej leżą
+    drawOrder.forEach((el) => svg.appendChild(el));
+    if (selectedId) svg.appendChild(zones.get(selectedId));
+    showDetail(areas.find((area) => area.id === selectedId));
+  }
+
+  function moveTooltip(event) {
+    const box = tooltip.parentElement.getBoundingClientRect();
+    tooltip.style.left = `${event.clientX - box.left}px`;
+    tooltip.style.top = `${event.clientY - box.top}px`;
+  }
+
+  zones.forEach((el, id) => {
+    const area = areas.find((a) => a.id === id);
+    el.addEventListener("click", () => select(id));
+    el.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        select(id);
+      }
+    });
+    el.addEventListener("mouseenter", (event) => {
+      chips.get(id).classList.add("hovered");
+      if (!tooltip || !canHover) return;
+      tooltip.textContent = area.title;
+      tooltip.hidden = false;
+      moveTooltip(event);
+    });
+    el.addEventListener("mousemove", (event) => {
+      if (tooltip && !tooltip.hidden) moveTooltip(event);
+    });
+    el.addEventListener("mouseleave", () => {
+      chips.get(id).classList.remove("hovered");
+      if (tooltip) tooltip.hidden = true;
+    });
+  });
+
+  chips.forEach((el, id) => {
+    el.setAttribute("aria-pressed", "false");
+    el.addEventListener("click", () => select(id));
+    el.addEventListener("mouseenter", () =>
+      zones.get(id).classList.add("hovered"),
+    );
+    el.addEventListener("mouseleave", () =>
+      zones.get(id).classList.remove("hovered"),
+    );
+    el.addEventListener("focus", () => zones.get(id).classList.add("hovered"));
+    el.addEventListener("blur", () =>
+      zones.get(id).classList.remove("hovered"),
+    );
+  });
+
+  showDetail(null);
+}
+
 const nav = document.getElementById("nav");
 window.addEventListener("scroll", () => {
   nav.classList.toggle("scrolled", window.scrollY > 50);
@@ -1144,6 +1443,7 @@ const observer = new IntersectionObserver(
 document.querySelectorAll(".fade-in").forEach((el) => observer.observe(el));
 
 renderProgram(programEvents);
+renderVenueMap(venueAreas);
 renderDealerDen(dealersList);
 
 // mapa dociąga kafelki dopiero, gdy sekcja zbliża się do ekranu
