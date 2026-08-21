@@ -326,7 +326,14 @@ const dealersList = [
     description:
       "Dehydracja to twór dwojga uzdolnionych i niebanalnie charyzmatycznych twórców~ Stoisko wypełnione przypadkowymi przedmiotami inspirowanymi wspólnymi halucynacjami podczas przemierzania pustyni marzeń. Artyści: Juice i EndRayRei.",
   },
-  { id: 4, title: "To be announced 👀", lane: "B", row: 13 },
+  {
+    id: 4,
+    title: "BaiPen Arts",
+    lane: "B",
+    row: 13,
+    description:
+      "Howdy cowboje, tu BaiPen Arts - jesteśmy dwójką artystów (Bailord i Pencia), którzy wspólnie tworzą futrzasty merch Znajdziesz u nas: naklejki, smyczki, kubeczki, zeszyty na naklejki, printy, breloczki, fursuitowe części, fursuit spraye, i wiele więcej! (szczególnie dużo łapek)",
+  },
   {
     id: 5,
     title: "Dumb Dogs Craft",
