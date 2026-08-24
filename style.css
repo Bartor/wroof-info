@@ -88,6 +88,10 @@
   /* plan Dealer's Denu */
   --denmap-plan-w: 300px;
   --denmap-detail-h: 17rem;
+
+  /* mapa trasy fursuitwalka - kwadrat ograniczony też wysokością okna */
+  --walkmap-w: 620px;
+
   --fade-size: 2.5rem;
 }
 
@@ -151,7 +155,6 @@ dt,
 blockquote,
 figcaption,
 .about-text,
-.join-text,
 .program-card-body,
 .faq-answer,
 .badge-note,
@@ -294,7 +297,6 @@ h3,
 
 /* wspólny blok treści sekcji */
 .about-content,
-.join-content,
 .program-content,
 .dealers-content,
 .tickets-content,
@@ -309,7 +311,6 @@ h3,
 }
 
 .about-content h2,
-.join-content h2,
 .program-content h2,
 .dealers-content h2,
 .tickets-content h2,
@@ -441,32 +442,21 @@ h3,
   text-align: center;
 }
 
-.about-text,
-.join-text {
+.about-text {
   max-width: var(--measure);
 }
 
-.about-text h2,
-.join-text h2 {
+.about-text h2 {
   margin-bottom: var(--sp-5);
 }
 
-.about-text p,
-.join-text p {
+.about-text p {
   font-size: var(--fs-lg);
   line-height: var(--lh-body);
 }
 
-.about-text p + p,
-.join-text p + p {
+.about-text p + p {
   margin-top: var(--sp-4);
-}
-
-.join-visual {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
 }
 
 /* Carousel */
@@ -570,20 +560,6 @@ h3,
 
 .carousel-dot.active {
   background: var(--white);
-}
-
-/* join */
-.join {
-  background: var(--teal);
-  color: var(--white);
-}
-
-.join-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--sp-7);
-  text-align: center;
 }
 
 /* program */
@@ -724,6 +700,331 @@ h3,
 .program-illustration {
   right: 2%;
   bottom: 2%;
+}
+
+/* fursuitwalk */
+.walk {
+  background: var(--teal);
+  color: var(--white);
+}
+
+.walk-content {
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: var(--sp-section) var(--sp-6);
+  width: 100%;
+  position: relative;
+  z-index: 2;
+}
+
+.walk-content h2 {
+  font-size: var(--fs-heading);
+  line-height: var(--lh-tight);
+  text-align: center;
+  margin-bottom: var(--sp-4);
+}
+
+.walk-content .tickets-subtitle {
+  margin-bottom: 0;
+  max-width: var(--measure);
+  margin-inline: auto;
+}
+
+/* mapa na środku, pod nią postoje i opis trasy */
+.walkmap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-5);
+  margin-top: var(--sp-6);
+}
+
+/* kwadratowa karta mapy - szerokość ograniczona też wysokością okna,
+   żeby na niskich ekranach nie wychodziła poza sekcję */
+.walkmap-plan {
+  width: min(var(--walkmap-w), 62vh, 100%);
+  display: flex;
+  flex-direction: column;
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  corner-shape: var(--squircle);
+  padding: var(--sp-3) var(--sp-3) var(--sp-2);
+  box-shadow: var(--shadow-lg);
+}
+
+.walkmap-canvas {
+  aspect-ratio: 1;
+  border-radius: var(--radius-md);
+  corner-shape: var(--squircle);
+  overflow: hidden;
+  background: var(--grey-100);
+  z-index: 1;
+}
+
+/* kafelki OSM są kolorowe i gryzą się z paletą - odbarwiamy je do szarości,
+   żeby kolor niosła tylko trasa i przystanki */
+.walkmap-tiles .leaflet-tile {
+  filter: grayscale(1) contrast(0.92) brightness(1.06);
+}
+
+.walkmap-route-casing {
+  stroke: var(--white);
+  stroke-width: 9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
+
+.walkmap-route {
+  stroke: var(--red);
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
+
+.walkmap-pin {
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  border: 2px solid var(--white);
+  background: var(--teal);
+  color: var(--white);
+  font-size: var(--fs-sm);
+  line-height: 1;
+  box-shadow: var(--shadow-sm);
+  transition:
+    transform var(--t-fast),
+    background var(--t-fast);
+}
+
+.walkmap-pin--start {
+  background: var(--black);
+}
+
+.walkmap-pin--stop {
+  background: var(--gold);
+  color: var(--black);
+  width: 2.1rem;
+  height: 2.1rem;
+  margin: -0.175rem;
+}
+
+.walkmap-marker:hover .walkmap-pin,
+.walkmap-pin.hovered {
+  transform: scale(1.15);
+}
+
+.walkmap-pin.selected {
+  background: var(--red);
+  color: var(--white);
+  transform: scale(1.15);
+}
+
+.walkmap-hint {
+  margin-top: var(--sp-2);
+  text-align: center;
+  color: var(--grey-700);
+  font-size: var(--fs-sm);
+}
+
+.walkmap-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--sp-2) var(--sp-4);
+  list-style: none;
+  margin-top: var(--sp-3);
+  color: var(--grey-700);
+  font-size: var(--fs-sm);
+}
+
+.walkmap-legend li {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.walkmap-legend-line {
+  width: 1.75rem;
+  height: 4px;
+  border-radius: var(--radius-pill);
+  background: var(--red);
+}
+
+.walkmap-legend-dot {
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 50%;
+  border: 2px solid var(--white);
+  box-shadow: 0 0 0 1px var(--grey-200);
+}
+
+.walkmap-legend-dot--stop {
+  background: var(--gold);
+}
+
+.walkmap-side {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-4);
+}
+
+.walkmap-list {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--sp-3);
+  width: 100%;
+}
+
+.walkmap-list li {
+  flex: 1 1 15rem;
+  max-width: 20rem;
+}
+
+/* ulice trasy zostają opisem - na mapie zaznaczamy tylko postoje */
+.walkmap-route-text {
+  max-width: var(--measure);
+  text-align: center;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-body);
+  opacity: 0.9;
+}
+
+.walkmap-chip {
+  display: flex;
+  align-items: flex-start;
+  height: 100%;
+  gap: var(--sp-3);
+  width: 100%;
+  padding: var(--sp-2) var(--sp-3);
+  border: 2px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  corner-shape: var(--squircle);
+  background: var(--surface-soft);
+  color: var(--white);
+  font-family: inherit;
+  font-size: var(--fs-md);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background var(--t-fast),
+    color var(--t-fast),
+    border-color var(--t-fast);
+}
+
+.walkmap-chip:hover,
+.walkmap-chip:focus-visible {
+  background: var(--surface-strong);
+  border-color: var(--white);
+  outline: none;
+}
+
+.walkmap-chip.selected {
+  background: var(--white);
+  color: var(--teal-dark);
+  border-color: var(--white);
+}
+
+.walkmap-chip--back {
+  opacity: 0.85;
+}
+
+.walkmap-chip-num {
+  flex: 0 0 1.75rem;
+  height: 1.75rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--teal-dark);
+  font-size: var(--fs-sm);
+  line-height: 1;
+}
+
+.walkmap-chip--start .walkmap-chip-num {
+  background: var(--black);
+}
+
+.walkmap-chip--stop .walkmap-chip-num {
+  background: var(--gold);
+  color: var(--black);
+}
+
+.walkmap-chip.selected .walkmap-chip-num {
+  background: var(--red);
+  color: var(--white);
+}
+
+.walkmap-chip.selected.walkmap-chip--stop .walkmap-chip-num {
+  background: var(--gold);
+  color: var(--black);
+}
+
+.walkmap-chip-body {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* nazwy postojów są długie, więc zawijają się zamiast urywać wielokropkiem */
+.walkmap-chip-name {
+  min-width: 0;
+  line-height: var(--lh-snug);
+}
+
+.walkmap-chip-note {
+  font-size: var(--fs-xs);
+  line-height: var(--lh-snug);
+  opacity: 0.85;
+}
+
+.walkmap-chip-time {
+  margin-top: var(--sp-1);
+  font-family: "Luckiest Guy UI", "Luckiest Guy", cursive;
+  font-size: var(--fs-xs);
+  letter-spacing: var(--ls-base);
+  white-space: nowrap;
+}
+
+/* dymek Leafleta w stylu chmurki z planu Dealer's Denu */
+.walkmap-popup .leaflet-popup-content-wrapper {
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--black);
+  color: var(--white);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+}
+
+.walkmap-popup .leaflet-popup-content {
+  margin: 0;
+  font-family: inherit;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-snug);
+}
+
+.walkmap-popup .leaflet-popup-tip {
+  background: var(--black);
+}
+
+.walkmap .leaflet-container {
+  font-family: inherit;
+  background: var(--grey-100);
+}
+
+.walkmap .leaflet-control-zoom a {
+  color: var(--black);
+  border-radius: var(--radius-sm);
+}
+
+.walkmap .leaflet-control-attribution {
+  font-size: 0.7rem;
+  background: rgba(255, 255, 255, 0.8);
 }
 
 /* dealers */
@@ -1675,6 +1976,7 @@ h3,
   :root {
     --denmap-plan-w: 290px;
     --denmap-detail-h: 13rem;
+    --walkmap-h: 380px;
   }
 
   .program-grid {
@@ -1742,6 +2044,10 @@ h3,
 
   .merch-shirt {
     width: min(100%, 456px);
+  }
+
+  .walkmap-plan {
+    width: 100%;
   }
 
   .denmap {

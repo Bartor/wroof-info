@@ -15,7 +15,7 @@ function formatHosts(hosts) {
 }
 
 const POLISH_TYPOGRAPHY_SELECTOR =
-  "p, li, dd, dt, blockquote, figcaption, .badge-note, .program-card-body, .program-card-host, .faq-answer, .denmap-intro, .denmap-detail, .about-text, .join-text, .ticket-card";
+  "p, li, dd, dt, blockquote, figcaption, .badge-note, .program-card-body, .program-card-host, .faq-answer, .denmap-intro, .denmap-detail, .about-text, .ticket-card";
 
 function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -849,6 +849,257 @@ function renderDealerDen(dealers) {
   updateScrollFade(list);
 }
 
+// Trasa fursuitwalka - jedna pętla z zajezdni Dąbie pod Halę Stulecia i z
+// powrotem. Geometria odrysowana z OpenStreetMap (ulice, aleja przez park,
+// przejście na plac pod Iglicą i pasaż między Halą a fontanną), współrzędne
+// w formacie [szerokość, długość].
+const walkRoute = [
+  [51.10518, 17.08601],
+  [51.1062, 17.08648],
+  [51.10629, 17.08666],
+  [51.10667, 17.08632],
+  [51.107, 17.08608],
+  [51.10723, 17.08584],
+  [51.10788, 17.08475],
+  [51.10791, 17.08437],
+  [51.10807, 17.08454],
+  [51.10854, 17.08488],
+  [51.10861, 17.08479],
+  [51.10876, 17.08442],
+  [51.10902, 17.08407],
+  [51.10963, 17.08346],
+  [51.11021, 17.08303],
+  [51.11017, 17.08284],
+  [51.11024, 17.08259],
+  [51.11057, 17.08165],
+  [51.11073, 17.08111],
+  [51.11078, 17.08066],
+  [51.1109, 17.08058],
+  [51.10895, 17.07383],
+  [51.1089, 17.07386],
+  [51.10804, 17.0738],
+  [51.10807, 17.0742],
+  [51.10784, 17.07415],
+  [51.10764, 17.07475],
+  [51.10762, 17.0755],
+  [51.10771, 17.0757],
+  [51.1075, 17.07628],
+  [51.10798, 17.07671],
+  [51.10791, 17.07694],
+  [51.10812, 17.07774],
+  [51.10794, 17.07823],
+  [51.10772, 17.07953],
+  [51.10734, 17.0792],
+  [51.107, 17.07898],
+  [51.10645, 17.07887],
+  [51.1061, 17.07892],
+  [51.1058, 17.07912],
+  [51.1056, 17.0794],
+  [51.10556, 17.07953],
+  [51.10601, 17.08025],
+  [51.10609, 17.08044],
+  [51.10621, 17.08116],
+  [51.10626, 17.08131],
+  [51.10716, 17.08291],
+  [51.1074, 17.08325],
+  [51.10791, 17.08437],
+  [51.10788, 17.08475],
+  [51.10719, 17.08589],
+  [51.10629, 17.08666],
+  [51.1062, 17.08648],
+  [51.10518, 17.08601],
+];
+
+// Na mapie zaznaczamy tylko miejsca, w których się zatrzymujemy - kolejne
+// ulice trasy opisuje podpis pod listą.
+const walkStops = [
+  {
+    id: 1,
+    name: "Czasoprzestrzeń",
+    latlng: [51.10518, 17.08601],
+    kind: "start",
+    icon: "🏁",
+    time: "ok. 12:00",
+    note: "Start fursuitwalka, powrót ok. 14:30",
+  },
+  {
+    id: 2,
+    name: "Park Szczytnicki",
+    latlng: [51.10963, 17.08346],
+    kind: "stop",
+    icon: "🌳",
+    time: "ok. 20 minut",
+    note: "Postój na polanie",
+  },
+  {
+    id: 3,
+    name: "Fontanna przy Hali Stulecia",
+    latlng: [51.10794, 17.07823],
+    kind: "stop",
+    icon: "📸",
+    time: "ok. 20 minut",
+    note: "Postój na wspólne zdjęcie",
+  },
+];
+
+function renderWalkMap() {
+  const canvas = document.getElementById("walkMapCanvas");
+  const list = document.getElementById("walkList");
+  const hint = document.getElementById("walkMapHint");
+  if (!canvas || !list) return;
+
+  // lista działa też bez mapy - gdyby Leaflet nie doszedł z CDN-u,
+  // zostaje czytelny spis postojów
+  list.innerHTML = walkStops
+    .map(
+      (stop) => `
+      <li>
+        <button type="button" class="walkmap-chip walkmap-chip--${stop.kind}" data-walk-id="${stop.id}">
+          <span class="walkmap-chip-num" aria-hidden="true">${stop.icon}</span>
+          <span class="walkmap-chip-body">
+            <span class="walkmap-chip-name">${escapeHtml(stop.name)}</span>
+            <span class="walkmap-chip-note">${escapeHtml(stop.note)}</span>
+            <span class="walkmap-chip-time">${escapeHtml(stop.time)}</span>
+          </span>
+        </button>
+      </li>`,
+    )
+    .join("");
+
+  const chips = new Map();
+  list
+    .querySelectorAll(".walkmap-chip")
+    .forEach((el) => chips.set(Number(el.dataset.walkId), el));
+
+  if (typeof L === "undefined") {
+    canvas.hidden = true;
+    return;
+  }
+
+  // pełne stopnie zoomu i zwykła animacja setView - przy ułamkowym zoomie
+  // i flyTo warstwa wektorowa rozjeżdża się z kafelkami w trakcie animacji
+  const map = L.map(canvas, {
+    scrollWheelZoom: false,
+    attributionControl: true,
+  });
+
+  L.tileLayer(
+    "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+    {
+      subdomains: "abcd",
+      maxZoom: 20,
+      className: "walkmap-tiles",
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    },
+  ).addTo(map);
+
+  // biała obwódka pod spodem odcina trasę od tła mapy, żeby czerwień
+  // czytała się też nad ciemniejszą zielenią parku
+  L.polyline(walkRoute, {
+    className: "walkmap-route-casing",
+    interactive: false,
+  }).addTo(map);
+  L.polyline(walkRoute, {
+    className: "walkmap-route",
+    interactive: false,
+  }).addTo(map);
+
+  const markers = new Map();
+  walkStops.forEach((stop) => {
+    const marker = L.marker(stop.latlng, {
+      icon: L.divIcon({
+        className: "walkmap-marker",
+        html: `<span class="walkmap-pin walkmap-pin--${stop.kind}" aria-hidden="true">${stop.icon}</span>`,
+        iconSize: [28, 28],
+        iconAnchor: [14, 14],
+      }),
+      keyboard: false,
+      title: stop.name,
+      riseOnHover: true,
+    }).addTo(map);
+    marker.bindPopup(
+      `<strong>${escapeHtml(stop.name)}</strong><br />${escapeHtml(stop.note)} &middot; ${escapeHtml(stop.time)}`,
+      {
+        className: "walkmap-popup",
+        closeButton: false,
+        offset: [0, -6],
+        // sami centrujemy mapę na przystanku, autoPan tylko by to psuł
+        autoPan: false,
+      },
+    );
+    marker.on("click", () => select(stop.id));
+    markers.set(stop.id, marker);
+  });
+
+  // margines wokół trasy proporcjonalny do mapy - na małym ekranie stała
+  // wartość zjadałaby połowę kadru
+  const bounds = L.latLngBounds(walkRoute);
+  const pad = Math.max(
+    10,
+    Math.round(Math.min(canvas.clientWidth, canvas.clientHeight) * 0.04),
+  );
+  map.fitBounds(bounds, { padding: [pad, pad] });
+  map.setMinZoom(map.getZoom() - 1);
+
+  let selectedId = null;
+
+  // stan trzyma kółko wewnątrz znacznika - element korzenia należy do Leafleta
+  function pinOf(id) {
+    const el = markers.get(id).getElement();
+    return el && el.querySelector(".walkmap-pin");
+  }
+
+  function select(id) {
+    selectedId = selectedId === id ? null : id;
+    markers.forEach((marker, markerId) => {
+      const pin = pinOf(markerId);
+      if (pin) pin.classList.toggle("selected", markerId === selectedId);
+    });
+    chips.forEach((el, chipId) => {
+      el.classList.toggle("selected", chipId === selectedId);
+      el.setAttribute("aria-pressed", chipId === selectedId ? "true" : "false");
+    });
+    if (selectedId === null) {
+      map.closePopup();
+      map.fitBounds(bounds, { padding: [pad, pad] });
+      return;
+    }
+    const marker = markers.get(selectedId);
+    map.setView(marker.getLatLng(), 16);
+    marker.openPopup();
+  }
+
+  function hover(id, on) {
+    const pin = pinOf(id);
+    if (pin) pin.classList.toggle("hovered", on);
+  }
+
+  chips.forEach((el, id) => {
+    el.setAttribute("aria-pressed", "false");
+    el.addEventListener("click", () => select(id));
+    el.addEventListener("mouseenter", () => hover(id, true));
+    el.addEventListener("mouseleave", () => hover(id, false));
+    el.addEventListener("focus", () => hover(id, true));
+    el.addEventListener("blur", () => hover(id, false));
+  });
+
+  // na dotyku jeden palec domyślnie przesuwałby mapę zamiast strony,
+  // więc przeciąganie włącza się dopiero po pierwszym dotknięciu mapy
+  if (L.Browser.mobile) {
+    map.dragging.disable();
+    if (hint) hint.hidden = false;
+    canvas.addEventListener(
+      "touchstart",
+      () => {
+        map.dragging.enable();
+        if (hint) hint.hidden = true;
+      },
+      { once: true, passive: true },
+    );
+  }
+}
+
 const nav = document.getElementById("nav");
 window.addEventListener("scroll", () => {
   nav.classList.toggle("scrolled", window.scrollY > 50);
@@ -894,6 +1145,20 @@ document.querySelectorAll(".fade-in").forEach((el) => observer.observe(el));
 
 renderProgram(programEvents);
 renderDealerDen(dealersList);
+
+// mapa dociąga kafelki dopiero, gdy sekcja zbliża się do ekranu
+const walkSection = document.getElementById("walk");
+if (walkSection) {
+  const walkObserver = new IntersectionObserver(
+    (entries, obs) => {
+      if (!entries.some((entry) => entry.isIntersecting)) return;
+      obs.disconnect();
+      renderWalkMap();
+    },
+    { rootMargin: "300px" },
+  );
+  walkObserver.observe(walkSection);
+}
 applyPolishTypography();
 
 const carousel = document.querySelector(".carousel");
