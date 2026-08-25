@@ -85,7 +85,7 @@
   /* ikony rysowane maską, żeby dziedziczyły kolor */
   --icon-close: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 6 18 18M18 6 6 18' stroke='%23000' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E");
 
-  /* plan Dealer's Denu */
+  /* plan Dealers' Denu */
   --denmap-plan-w: 300px;
   --denmap-detail-h: 17rem;
 
@@ -96,10 +96,14 @@
 
   /* program - stała szerokość kolumny, bo rząd sal przewija się w bok */
   --program-col-w: 260px;
+  /* panel z opisem trzyma wysokość, żeby wybór punktu nie przesuwał rozkładu -
+     mieści najdłuższy opis, więc przy zmianie punktu nic się nie rusza */
+  --program-detail-h: 10rem;
 
   /* plan terenu - poniżej tej szerokości podpisy pomieszczeń robią się
      nieczytelne, więc plan przewija się w bok zamiast kurczyć */
-  --venuemap-detail-h: 9rem;
+  /* panel mieści najdłuższy opis strefy, więc wybór nie przesuwa planu */
+  --venuemap-detail-h: 11rem;
   --venuemap-min-w: 600px;
 }
 
@@ -163,7 +167,7 @@ dt,
 blockquote,
 figcaption,
 .about-text,
-.program-card-body,
+.program-detail,
 .faq-answer,
 .badge-note,
 .denmap-intro,
@@ -180,7 +184,7 @@ h4,
 h5,
 h6,
 .program-location,
-.program-card-header h3 {
+.program-card-title {
   text-wrap: balance;
 }
 
@@ -576,7 +580,6 @@ h3,
 .program {
   background: var(--white);
   color: var(--black);
-  min-height: auto;
 }
 
 .program-content {
@@ -726,7 +729,15 @@ a.program-location:focus-visible {
   opacity: 0.75;
 }
 
+/* Kafelek tylko wybiera punkt programu - opis pokazuje panel nad rozkładem,
+   tak samo jak przy planie terenu. */
 .program-card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
   background: var(--white);
   border: 3px solid var(--black);
   border-radius: var(--radius-lg);
@@ -740,14 +751,17 @@ a.program-location:focus-visible {
   cursor: pointer;
 }
 
-.program-card:hover {
+.program-card:hover,
+.program-card:focus-visible {
   transform: translateY(-4px);
   box-shadow: 8px 8px 0 var(--black);
+  outline: none;
 }
 
-/* kafelek bez opisu i prowadzących nie ma czego pokazać po kliknięciu */
-.program-card:not([data-expandable]) {
-  cursor: default;
+/* wybrany kafelek zostaje uniesiony, żeby było widać, czyj opis jest na górze */
+.program-card.selected {
+  transform: translateY(-4px);
+  box-shadow: 8px 8px 0 var(--red);
 }
 
 .program-card-time {
@@ -762,44 +776,66 @@ a.program-location:focus-visible {
   gap: var(--sp-2);
 }
 
-.program-card h3 {
+.program-card-title {
+  font-family: "Luckiest Guy UI", "Luckiest Guy", cursive;
   font-size: var(--fs-lg);
-  margin-bottom: var(--sp-1);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-base);
   color: var(--red);
+  text-wrap: balance;
 }
 
-.program-card-header {
+/* opis wybranego punktu - pod tytułem sekcji, jak przy planie terenu */
+.program-detail {
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  min-height: var(--program-detail-h);
+  /* szerzej niż zwykła kolumna tekstu: długi opis mieści się w mniejszej
+     liczbie wierszy, więc wybór punktu nie podskakuje resztą sekcji */
+  width: 100%;
+  max-width: var(--content-narrow);
+  margin-inline: auto;
+  text-align: center;
 }
 
-.program-card-body {
-  max-height: 0;
-  overflow: hidden;
-  transition:
-    max-height var(--t-slow),
-    margin-top var(--t-slow);
-  margin-top: 0;
+.program-detail h3 {
+  font-family: "Luckiest Guy UI", "Luckiest Guy", cursive;
+  font-size: var(--fs-2xl);
+  letter-spacing: var(--ls-base);
+  color: var(--red);
+  margin-bottom: var(--sp-2);
 }
 
-.program-card.active .program-card-body {
-  max-height: 200px;
-  margin-top: var(--sp-2);
-}
-
-.program-card p {
-  font-size: var(--fs-sm);
+.program-detail p {
+  font-size: var(--fs-md);
   line-height: var(--lh-body);
+}
+
+.program-detail-meta {
+  font-family: "Luckiest Guy UI", "Luckiest Guy", cursive;
+  font-size: var(--fs-sm) !important;
+  letter-spacing: var(--ls-base);
+  color: var(--teal);
+  margin-bottom: var(--sp-3);
+}
+
+.program-detail-empty {
   color: var(--grey-700);
 }
 
-.program-card-host {
-  font-size: var(--fs-xs);
-  color: var(--teal);
-  font-weight: 700;
-  margin-top: var(--sp-2);
+.program-intro p {
+  font-size: var(--fs-lg);
+  line-height: var(--lh-snug);
 }
 
+.program-intro-hint {
+  margin-top: var(--sp-3);
+  font-size: var(--fs-sm) !important;
+  color: var(--grey-700);
+}
+
+/* plakietka niesie kategorię punktu programu - kolorem i nazwą */
 .program-card-tag {
   display: inline-block;
   background: var(--gold);
@@ -813,15 +849,47 @@ a.program-location:focus-visible {
   white-space: nowrap;
 }
 
+.program-card-tag[data-kind="prelekcja"] {
+  background: var(--teal);
+  color: var(--white);
+}
+
+.program-card-tag[data-kind="koncert"] {
+  background: var(--red);
+  color: var(--white);
+}
+
 .program-illustration {
   right: 2%;
   bottom: 2%;
 }
 
 /* fursuitwalk */
+/* żółte tło z rozmytą grafiką - ten sam zabieg, który miała sekcja
+   z koszulką; odróżnia fursuitwalk od tealowego planu terenu tuż pod nim */
 .walk {
-  background: var(--teal);
-  color: var(--white);
+  background: var(--gold);
+  color: var(--black);
+}
+
+.walk-bg-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.walk-bg {
+  position: absolute;
+  /* wyjście poza krawędzie chowa przejaśnienie po rozmyciu */
+  inset: -24px;
+  width: calc(100% + 48px);
+  height: calc(100% + 48px);
+  object-fit: cover;
+  opacity: 0.28;
+  /* różową grafikę badge zamieniamy na żółte tony */
+  filter: grayscale(1) sepia(1) saturate(2.2) hue-rotate(5deg) brightness(1.25)
+    blur(8px);
 }
 
 .walk-content {
@@ -1020,11 +1088,11 @@ a.program-location:focus-visible {
   gap: var(--sp-3);
   width: 100%;
   padding: var(--sp-2) var(--sp-3);
-  border: 2px solid var(--border-soft);
+  border: 2px solid var(--black);
   border-radius: var(--radius-lg);
   corner-shape: var(--squircle);
-  background: var(--surface-soft);
-  color: var(--white);
+  background: var(--white);
+  color: var(--black);
   font-family: inherit;
   font-size: var(--fs-md);
   text-align: left;
@@ -1037,15 +1105,13 @@ a.program-location:focus-visible {
 
 .walkmap-chip:hover,
 .walkmap-chip:focus-visible {
-  background: var(--surface-strong);
-  border-color: var(--white);
+  background: var(--grey-100);
   outline: none;
 }
 
 .walkmap-chip.selected {
-  background: var(--white);
-  color: var(--teal-dark);
-  border-color: var(--white);
+  background: var(--red);
+  color: var(--white);
 }
 
 .walkmap-chip--back {
@@ -1059,6 +1125,7 @@ a.program-location:focus-visible {
   place-items: center;
   border-radius: 50%;
   background: var(--teal-dark);
+  color: var(--white);
   font-size: var(--fs-sm);
   line-height: 1;
 }
@@ -1073,8 +1140,8 @@ a.program-location:focus-visible {
 }
 
 .walkmap-chip.selected .walkmap-chip-num {
-  background: var(--red);
-  color: var(--white);
+  background: var(--white);
+  color: var(--red);
 }
 
 .walkmap-chip.selected.walkmap-chip--stop .walkmap-chip-num {
@@ -1108,7 +1175,7 @@ a.program-location:focus-visible {
   white-space: nowrap;
 }
 
-/* dymek Leafleta w stylu chmurki z planu Dealer's Denu */
+/* dymek Leafleta w stylu chmurki z planu Dealers' Denu */
 .walkmap-popup .leaflet-popup-content-wrapper {
   padding: var(--sp-2) var(--sp-3);
   background: var(--black);
@@ -1649,6 +1716,11 @@ a.program-location:focus-visible {
 }
 
 @media (max-width: 700px) {
+  :root {
+    --program-detail-h: 16rem;
+    --venuemap-detail-h: 14rem;
+  }
+
   .venuemap-hint {
     display: block;
   }
@@ -1750,7 +1822,7 @@ a.program-location:focus-visible {
   --cat-solid-ink: var(--black);
 }
 
-/* znaczniki wejść - ten sam zielony trójkąt co pod planem Dealer's Denu */
+/* znaczniki wejść - ten sam zielony trójkąt co pod planem Dealers' Denu */
 .venuemap-entrance {
   fill: var(--green);
 }
@@ -1823,6 +1895,7 @@ a.program-location:focus-visible {
   flex-direction: column;
   justify-content: center;
   min-height: var(--venuemap-detail-h);
+  width: 100%;
   max-width: var(--measure);
   margin-inline: auto;
   text-align: center;
@@ -1895,6 +1968,22 @@ a.program-location:focus-visible {
 .venuemap-plan {
   -webkit-user-select: none;
   user-select: none;
+}
+
+/* przewijane w bok rzędy można złapać myszką - kursor to zapowiada. Na dotyku
+   nie ma kursora ani przeciągania, więc i podpowiedzi nie pokazujemy. */
+@media (hover: hover) {
+  .program-grid,
+  .venuemap-plan-scroll {
+    cursor: grab;
+  }
+
+  .program-grid.is-dragging,
+  .venuemap-plan-scroll.is-dragging,
+  .program-grid.is-dragging *,
+  .venuemap-plan-scroll.is-dragging * {
+    cursor: grabbing;
+  }
 }
 
 /* tickets */

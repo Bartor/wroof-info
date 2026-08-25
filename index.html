@@ -73,8 +73,8 @@
       <ul class="nav-links" id="navLinks">
         <li><a href="#about" class="nav-link">Czym jest Wroof?</a></li>
         <li><a href="#tickets" class="nav-link">Bilety</a></li>
-        <li><a href="#program" class="nav-link">Program</a></li>
         <li><a href="#walk" class="nav-link">Fursuitwalk</a></li>
+        <li><a href="#program" class="nav-link">Program</a></li>
         <li><a href="#venue" class="nav-link">Mapa</a></li>
         <li><a href="#dealers" class="nav-link">Wystawcy</a></li>
         <li><a href="#faq" class="nav-link">FAQ</a></li>
@@ -286,24 +286,10 @@
         </div>
       </div>
     </section>
-    <section class="section program" id="program">
-      <img
-        src="img/1ilustracja lisa.png"
-        alt=""
-        class="program-illustration"
-        aria-hidden="true"
-      />
-      <div class="program-content">
-        <h2 class="fade-in">Program</h2>
-        <!-- <p class="tickets-subtitle fade-in">
-          Naciśnij na kafelek, aby przeczytać szczegóły
-        </p> -->
-        <ul class="program-special fade-in" id="programSpecial"></ul>
-        <div class="program-grid scroll-fade-x fade-in" id="programGrid"></div>
-      </div>
-    </section>
-
     <section class="section walk" id="walk">
+      <div class="walk-bg-layer" aria-hidden="true">
+        <img src="badge/helper-bg.png" class="walk-bg" alt="" />
+      </div>
       <div class="walk-content">
         <h2 class="fade-in">Fursuitwalk</h2>
         <div class="walkmap fade-in" id="walkMap">
@@ -334,6 +320,24 @@
             </p>
           </div>
         </div>
+      </div>
+    </section>
+
+    <section class="section program" id="program">
+      <img
+        src="img/1ilustracja lisa.png"
+        alt=""
+        class="program-illustration"
+        aria-hidden="true"
+      />
+      <div class="program-content">
+        <h2 class="fade-in">Program</h2>
+        <!-- <p class="tickets-subtitle fade-in">
+          Naciśnij na kafelek, aby przeczytać szczegóły
+        </p> -->
+        <div class="program-detail fade-in" id="programDetail" aria-live="polite"></div>
+        <ul class="program-special fade-in" id="programSpecial"></ul>
+        <div class="program-grid scroll-fade-x fade-in" id="programGrid"></div>
       </div>
     </section>
 
@@ -382,7 +386,7 @@
                 viewBox="0 -4 69 186"
                 preserveAspectRatio="xMidYMid meet"
                 role="group"
-                aria-label="Plan Dealer's Den"
+                aria-label="Plan Dealers' Den"
               ></svg>
               <div class="denmap-tooltip" id="denTooltip" hidden></div>
             </div>
