@@ -85,7 +85,7 @@
   /* ikony rysowane maską, żeby dziedziczyły kolor */
   --icon-close: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 6 18 18M18 6 6 18' stroke='%23000' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E");
 
-  /* plan Dealer's Denu */
+  /* plan Dealers' Denu */
   --denmap-plan-w: 300px;
   --denmap-detail-h: 17rem;
 
@@ -93,6 +93,18 @@
   --walkmap-w: 620px;
 
   --fade-size: 2.5rem;
+
+  /* program - stała szerokość kolumny, bo rząd sal przewija się w bok */
+  --program-col-w: 260px;
+  /* panel z opisem trzyma wysokość, żeby wybór punktu nie przesuwał rozkładu -
+     mieści najdłuższy opis, więc przy zmianie punktu nic się nie rusza */
+  --program-detail-h: 10rem;
+
+  /* plan terenu - poniżej tej szerokości podpisy pomieszczeń robią się
+     nieczytelne, więc plan przewija się w bok zamiast kurczyć */
+  /* panel mieści najdłuższy opis strefy, więc wybór nie przesuwa planu */
+  --venuemap-detail-h: 11rem;
+  --venuemap-min-w: 600px;
 }
 
 /*
@@ -155,7 +167,7 @@ dt,
 blockquote,
 figcaption,
 .about-text,
-.program-card-body,
+.program-detail,
 .faq-answer,
 .badge-note,
 .denmap-intro,
@@ -172,7 +184,7 @@ h4,
 h5,
 h6,
 .program-location,
-.program-card-header h3 {
+.program-card-title {
   text-wrap: balance;
 }
 
@@ -299,6 +311,7 @@ h3,
 .about-content,
 .program-content,
 .dealers-content,
+.venue-content,
 .tickets-content,
 .merch-content,
 .contact-content {
@@ -313,6 +326,7 @@ h3,
 .about-content h2,
 .program-content h2,
 .dealers-content h2,
+.venue-content h2,
 .tickets-content h2,
 .merch-content h2,
 .contact-content h2,
@@ -566,7 +580,6 @@ h3,
 .program {
   background: var(--white);
   color: var(--black);
-  min-height: auto;
 }
 
 .program-content {
@@ -588,14 +601,70 @@ h3,
   margin-inline: auto;
 }
 
+/* punkty trwające cały dzień - stoją nad rozkładem i nie przewijają się z nim */
+.program-special {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--sp-3);
+}
+
+.program-special-chip {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-4);
+  background: var(--white);
+  border: 3px solid var(--black);
+  border-radius: var(--radius-pill);
+  corner-shape: var(--squircle);
+  color: inherit;
+  text-decoration: none;
+  transition:
+    transform var(--t-base),
+    box-shadow var(--t-base);
+}
+
+a.program-special-chip:hover,
+a.program-special-chip:focus-visible {
+  transform: translateY(-3px);
+  box-shadow: 6px 6px 0 var(--black);
+  outline: none;
+}
+
+.program-special-title {
+  font-family: "Luckiest Guy UI", "Luckiest Guy", cursive;
+  font-size: var(--fs-md);
+  letter-spacing: var(--ls-base);
+  color: var(--red);
+}
+
+.program-special-time {
+  font-family: "Luckiest Guy UI", "Luckiest Guy", cursive;
+  font-size: var(--fs-sm);
+  letter-spacing: var(--ls-base);
+  color: var(--teal);
+  white-space: nowrap;
+}
+
+/* kolumn jest tyle, ile sal z programem - zostają w jednym rzędzie i przewijają
+   się w bok, bo ściśnięte do szerokości ekranu byłyby nieczytelne.
+   Wyściółka robi miejsce na uniesienie i cień kafelka przy najechaniu. */
 .program-grid {
   display: flex;
+  flex-wrap: nowrap;
   gap: var(--sp-4);
   align-items: flex-start;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  padding: var(--sp-1) var(--sp-2) var(--sp-3);
+  scrollbar-width: thin;
+  scrollbar-color: var(--grey-200) transparent;
 }
 
 .program-column {
-  flex: 1;
+  flex: 0 0 var(--program-col-w);
   min-width: 0;
   display: flex;
   flex-direction: column;
@@ -604,6 +673,7 @@ h3,
 }
 
 .program-location {
+  display: block;
   font-family: "Luckiest Guy UI", "Luckiest Guy", cursive;
   font-size: var(--fs-lg);
   padding: var(--sp-2) var(--sp-3);
@@ -613,9 +683,61 @@ h3,
   corner-shape: var(--squircle);
   text-align: center;
   letter-spacing: var(--ls-base);
+  text-decoration: none;
+  transition: background var(--t-fast);
 }
 
+/* kolumna nosi kolor kategorii swojej strefy - ten sam, którym sala jest
+   pomalowana na planie terenu */
+.program-column[data-venue-cat] .program-location {
+  background: var(--cat-solid);
+  color: var(--cat-solid-ink);
+}
+
+/* nagłówek kolumny prowadzi na plan terenu; podpowiedź jest widoczna zawsze,
+   bo na dotyku nie ma najechania, którym można by ją odsłonić */
+a.program-location:hover,
+a.program-location:focus-visible {
+  background: var(--teal-dark);
+  outline: none;
+}
+
+.program-column[data-venue-cat] a.program-location:hover,
+.program-column[data-venue-cat] a.program-location:focus-visible {
+  background: var(--cat-solid-hover);
+}
+
+/* sala wskazana z planu terenu - ramka gaśnie po chwili, żeby nie zostawiać
+   kolumny w trwale innym stanie */
+.program-column.is-target .program-location {
+  box-shadow: 0 0 0 4px var(--black);
+}
+
+.program-column .program-location {
+  transition:
+    background var(--t-fast),
+    box-shadow var(--t-base);
+}
+
+.program-location-map {
+  display: block;
+  margin-top: var(--sp-1);
+  font-family: "Lato", Arial, sans-serif;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0;
+  opacity: 0.75;
+}
+
+/* Kafelek tylko wybiera punkt programu - opis pokazuje panel nad rozkładem,
+   tak samo jak przy planie terenu. */
 .program-card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
   background: var(--white);
   border: 3px solid var(--black);
   border-radius: var(--radius-lg);
@@ -629,9 +751,17 @@ h3,
   cursor: pointer;
 }
 
-.program-card:hover {
+.program-card:hover,
+.program-card:focus-visible {
   transform: translateY(-4px);
   box-shadow: 8px 8px 0 var(--black);
+  outline: none;
+}
+
+/* wybrany kafelek zostaje uniesiony, żeby było widać, czyj opis jest na górze */
+.program-card.selected {
+  transform: translateY(-4px);
+  box-shadow: 8px 8px 0 var(--red);
 }
 
 .program-card-time {
@@ -646,44 +776,66 @@ h3,
   gap: var(--sp-2);
 }
 
-.program-card h3 {
+.program-card-title {
+  font-family: "Luckiest Guy UI", "Luckiest Guy", cursive;
   font-size: var(--fs-lg);
-  margin-bottom: var(--sp-1);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--ls-base);
   color: var(--red);
+  text-wrap: balance;
 }
 
-.program-card-header {
+/* opis wybranego punktu - pod tytułem sekcji, jak przy planie terenu */
+.program-detail {
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  min-height: var(--program-detail-h);
+  /* szerzej niż zwykła kolumna tekstu: długi opis mieści się w mniejszej
+     liczbie wierszy, więc wybór punktu nie podskakuje resztą sekcji */
+  width: 100%;
+  max-width: var(--content-narrow);
+  margin-inline: auto;
+  text-align: center;
 }
 
-.program-card-body {
-  max-height: 0;
-  overflow: hidden;
-  transition:
-    max-height var(--t-slow),
-    margin-top var(--t-slow);
-  margin-top: 0;
+.program-detail h3 {
+  font-family: "Luckiest Guy UI", "Luckiest Guy", cursive;
+  font-size: var(--fs-2xl);
+  letter-spacing: var(--ls-base);
+  color: var(--red);
+  margin-bottom: var(--sp-2);
 }
 
-.program-card.active .program-card-body {
-  max-height: 200px;
-  margin-top: var(--sp-2);
-}
-
-.program-card p {
-  font-size: var(--fs-sm);
+.program-detail p {
+  font-size: var(--fs-md);
   line-height: var(--lh-body);
+}
+
+.program-detail-meta {
+  font-family: "Luckiest Guy UI", "Luckiest Guy", cursive;
+  font-size: var(--fs-sm) !important;
+  letter-spacing: var(--ls-base);
+  color: var(--teal);
+  margin-bottom: var(--sp-3);
+}
+
+.program-detail-empty {
   color: var(--grey-700);
 }
 
-.program-card-host {
-  font-size: var(--fs-xs);
-  color: var(--teal);
-  font-weight: 700;
-  margin-top: var(--sp-2);
+.program-intro p {
+  font-size: var(--fs-lg);
+  line-height: var(--lh-snug);
 }
 
+.program-intro-hint {
+  margin-top: var(--sp-3);
+  font-size: var(--fs-sm) !important;
+  color: var(--grey-700);
+}
+
+/* plakietka niesie kategorię punktu programu - kolorem i nazwą */
 .program-card-tag {
   display: inline-block;
   background: var(--gold);
@@ -697,15 +849,47 @@ h3,
   white-space: nowrap;
 }
 
+.program-card-tag[data-kind="prelekcja"] {
+  background: var(--teal);
+  color: var(--white);
+}
+
+.program-card-tag[data-kind="koncert"] {
+  background: var(--red);
+  color: var(--white);
+}
+
 .program-illustration {
   right: 2%;
   bottom: 2%;
 }
 
 /* fursuitwalk */
+/* żółte tło z rozmytą grafiką - ten sam zabieg, który miała sekcja
+   z koszulką; odróżnia fursuitwalk od tealowego planu terenu tuż pod nim */
 .walk {
-  background: var(--teal);
-  color: var(--white);
+  background: var(--gold);
+  color: var(--black);
+}
+
+.walk-bg-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.walk-bg {
+  position: absolute;
+  /* wyjście poza krawędzie chowa przejaśnienie po rozmyciu */
+  inset: -24px;
+  width: calc(100% + 48px);
+  height: calc(100% + 48px);
+  object-fit: cover;
+  opacity: 0.28;
+  /* różową grafikę badge zamieniamy na żółte tony */
+  filter: grayscale(1) sepia(1) saturate(2.2) hue-rotate(5deg) brightness(1.25)
+    blur(8px);
 }
 
 .walk-content {
@@ -904,11 +1088,11 @@ h3,
   gap: var(--sp-3);
   width: 100%;
   padding: var(--sp-2) var(--sp-3);
-  border: 2px solid var(--border-soft);
+  border: 2px solid var(--black);
   border-radius: var(--radius-lg);
   corner-shape: var(--squircle);
-  background: var(--surface-soft);
-  color: var(--white);
+  background: var(--white);
+  color: var(--black);
   font-family: inherit;
   font-size: var(--fs-md);
   text-align: left;
@@ -921,15 +1105,13 @@ h3,
 
 .walkmap-chip:hover,
 .walkmap-chip:focus-visible {
-  background: var(--surface-strong);
-  border-color: var(--white);
+  background: var(--grey-100);
   outline: none;
 }
 
 .walkmap-chip.selected {
-  background: var(--white);
-  color: var(--teal-dark);
-  border-color: var(--white);
+  background: var(--red);
+  color: var(--white);
 }
 
 .walkmap-chip--back {
@@ -943,6 +1125,7 @@ h3,
   place-items: center;
   border-radius: 50%;
   background: var(--teal-dark);
+  color: var(--white);
   font-size: var(--fs-sm);
   line-height: 1;
 }
@@ -957,8 +1140,8 @@ h3,
 }
 
 .walkmap-chip.selected .walkmap-chip-num {
-  background: var(--red);
-  color: var(--white);
+  background: var(--white);
+  color: var(--red);
 }
 
 .walkmap-chip.selected.walkmap-chip--stop .walkmap-chip-num {
@@ -992,7 +1175,7 @@ h3,
   white-space: nowrap;
 }
 
-/* dymek Leafleta w stylu chmurki z planu Dealer's Denu */
+/* dymek Leafleta w stylu chmurki z planu Dealers' Denu */
 .walkmap-popup .leaflet-popup-content-wrapper {
   padding: var(--sp-2) var(--sp-3);
   background: var(--black);
@@ -1258,45 +1441,80 @@ h3,
   border-color: var(--white);
 }
 
-/* treść wychodząca poza panel wygasza się na krawędzi, po której da się
-   jeszcze przewinąć - zamiast urywać się w połowie wiersza */
-.is-clip-top {
-  -webkit-mask-image: linear-gradient(
-    to bottom,
-    transparent,
-    #000 var(--fade-size)
-  );
-  mask-image: linear-gradient(to bottom, transparent, #000 var(--fade-size));
+/* Treść wychodząca poza panel wygasza się na tej krawędzi, po której da się
+   jeszcze przewinąć - zamiast urywać się w połowie wiersza.
+
+   Postęp bierzemy wprost z przewijania elementu (oś czasu `scroll(self ...)`),
+   więc nie ma tu nasłuchiwania ani przeliczania w JS. Dwie animacje: pierwsza
+   rozsuwa wygaszenie na początku, gdy odjedziemy od krawędzi, druga zsuwa je
+   na końcu, gdy do niej dojedziemy. Kiedy nie ma czego przewijać, oś czasu jest
+   nieaktywna, animacje nie działają i maska zostaje pełna - czyli dokładnie to,
+   czego chcemy.
+
+   Wygaszenia trzymamy w zarejestrowanych zmiennych, bo tylko takie potrafią się
+   animować - zwykłe `--zmienne` przeskakują między wartościami. */
+@property --fade-start {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
 }
 
-.is-clip-bottom {
-  -webkit-mask-image: linear-gradient(
-    to bottom,
-    #000 calc(100% - var(--fade-size)),
-    transparent
-  );
-  mask-image: linear-gradient(
-    to bottom,
-    #000 calc(100% - var(--fade-size)),
-    transparent
-  );
+@property --fade-end {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
 }
 
-.is-clip-top.is-clip-bottom {
-  -webkit-mask-image: linear-gradient(
-    to bottom,
-    transparent,
-    #000 var(--fade-size),
-    #000 calc(100% - var(--fade-size)),
-    transparent
-  );
-  mask-image: linear-gradient(
-    to bottom,
-    transparent,
-    #000 var(--fade-size),
-    #000 calc(100% - var(--fade-size)),
-    transparent
-  );
+@keyframes scroll-fade-start {
+  from {
+    --fade-start: 0px;
+  }
+  to {
+    --fade-start: var(--fade-size);
+  }
+}
+
+@keyframes scroll-fade-end {
+  from {
+    --fade-end: var(--fade-size);
+  }
+  to {
+    --fade-end: 0px;
+  }
+}
+
+@supports (animation-timeline: scroll()) {
+  .scroll-fade-y,
+  .scroll-fade-x {
+    animation:
+      scroll-fade-start linear both,
+      scroll-fade-end linear both;
+    animation-range:
+      0 var(--fade-size),
+      calc(100% - var(--fade-size)) 100%;
+  }
+
+  .scroll-fade-y {
+    animation-timeline: scroll(self block), scroll(self block);
+    mask-image: linear-gradient(
+      to bottom,
+      transparent 0,
+      #000 var(--fade-start),
+      #000 calc(100% - var(--fade-end)),
+      transparent 100%
+    );
+  }
+
+  .scroll-fade-x {
+    animation-timeline: scroll(self inline), scroll(self inline);
+    mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 var(--fade-start),
+      #000 calc(100% - var(--fade-end)),
+      transparent 100%
+    );
+  }
 }
 
 /* stoisko bez opisu - wyśrodkowana notka w wolnym miejscu panelu */
@@ -1446,6 +1664,326 @@ h3,
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* plan terenu */
+.venue {
+  background: var(--teal);
+  color: var(--white);
+}
+
+.venue-content h2 {
+  text-align: center;
+  margin-bottom: var(--sp-6);
+}
+
+.venuemap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+}
+
+.venuemap-plan {
+  position: relative;
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  corner-shape: var(--squircle);
+  padding: var(--sp-4);
+  box-shadow: var(--shadow-lg);
+}
+
+/* na wąskich ekranach plan zostaje czytelny i przewija się w bok zamiast
+   kurczyć podpisy do nieczytelnego rozmiaru */
+.venuemap-plan-scroll {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--grey-200) transparent;
+}
+
+.venuemap-plan-inner {
+  min-width: var(--venuemap-min-w);
+}
+
+/* podpowiedź tylko wtedy, gdy plan faktycznie nie mieści się w karcie
+   (--venuemap-min-w + wyściółka karty i sekcji) */
+.venuemap-hint {
+  display: none;
+  margin-top: var(--sp-2);
+  text-align: center;
+  color: var(--grey-500);
+  font-size: var(--fs-sm);
+}
+
+@media (max-width: 700px) {
+  :root {
+    --program-detail-h: 16rem;
+    --venuemap-detail-h: 14rem;
+  }
+
+  .venuemap-hint {
+    display: block;
+  }
+}
+
+.venuemap-legend {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--sp-2) var(--sp-5);
+  margin-top: var(--sp-3);
+  color: var(--grey-700);
+  font-size: var(--fs-sm);
+}
+
+.venuemap-legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.venuemap-legend-swatch {
+  width: 0.95rem;
+  height: 0.95rem;
+  border-radius: var(--radius-sm);
+  background: var(--cat-fill);
+  border: 2px var(--cat-line-style) var(--cat-line);
+}
+
+.venuemap-legend-arrow {
+  width: 0.95rem;
+  height: 0.95rem;
+}
+
+.venuemap-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.venuemap-backdrop-shape {
+  fill: var(--grey-100);
+  stroke: var(--grey-200);
+  stroke-width: 0.5;
+}
+
+/* kategorie stref - jeden zestaw zmiennych ubiera plan, listę i legendę.
+   Strefy swobodne (chill, retro, teren) nie są osobnym pomieszczeniem, więc
+   zamiast wypełnienia dostają przerywany obrys. */
+[data-venue-cat] {
+  --cat-fill: var(--teal);
+  --cat-fill-strong: var(--teal-dark);
+  --cat-line: var(--black);
+  --cat-line-w: 0.4;
+  --cat-line-style: solid;
+  --cat-dash: none;
+  --cat-label: var(--white);
+  /* obrys wybranej strefy */
+  --cat-line-sel: var(--black);
+  --cat-line-w-sel: 0.9;
+  --cat-dash-sel: none;
+  /* kolor nazwy na białej karcie legendy */
+  --cat-ink: var(--teal-dark);
+  /* wersja kryjąca - nagłówki kolumn programu, gdzie kategoria musi być tłem */
+  --cat-solid: var(--cat-fill);
+  --cat-solid-hover: var(--cat-fill-strong);
+  --cat-solid-ink: var(--white);
+}
+
+[data-venue-cat="program"] {
+  --cat-fill: var(--red);
+  --cat-fill-strong: var(--red-dark);
+  --cat-ink: var(--red-dark);
+}
+
+[data-venue-cat="tech"] {
+  --cat-fill: var(--grey-700);
+  --cat-fill-strong: var(--black);
+  --cat-ink: var(--grey-700);
+}
+
+[data-venue-cat="zone"] {
+  --cat-fill: transparent;
+  --cat-fill-strong: rgba(229, 184, 90, 0.28);
+  --cat-line: var(--gold-dark);
+  --cat-line-w: 0.7;
+  --cat-line-style: dashed;
+  --cat-dash: 2.4 1.6;
+  --cat-label: var(--grey-700);
+  --cat-ink: var(--gold-dark);
+  /* strefa nie ma wypełnienia, więc wybór zaznacza sam obrys: ta sama kreska,
+     tylko grubsza - czarna ramka udawałaby pomieszczenie */
+  --cat-line-sel: var(--gold-dark);
+  --cat-line-w-sel: 1.3;
+  --cat-dash-sel: 2.4 1.6;
+  --cat-solid: var(--gold);
+  --cat-solid-hover: var(--gold-dark);
+  --cat-solid-ink: var(--black);
+}
+
+/* znaczniki wejść - ten sam zielony trójkąt co pod planem Dealers' Denu */
+.venuemap-entrance {
+  fill: var(--green);
+}
+
+.venuemap-area {
+  cursor: pointer;
+}
+
+.venuemap-area-shape {
+  fill: var(--cat-fill);
+  stroke: var(--cat-line);
+  stroke-width: var(--cat-line-w);
+  stroke-dasharray: var(--cat-dash);
+  transition: fill var(--t-fast);
+}
+
+/* rozmiary wewnątrz SVG są w jednostkach viewBox, nie w skali strony */
+.venuemap-area-label {
+  font-family: "Lato", Arial, sans-serif;
+  font-weight: 700;
+  fill: var(--cat-label);
+  text-anchor: middle;
+  dominant-baseline: central;
+  pointer-events: none;
+  user-select: none;
+}
+
+.venuemap-area:hover .venuemap-area-shape,
+.venuemap-area.hovered .venuemap-area-shape {
+  fill: var(--cat-fill-strong);
+}
+
+/* wybór zaznacza sam obrys - grubszy, w kolorze i kresce swojej kategorii.
+   Ciemniejsze wypełnienie zostaje wyłącznie dla najechania, więc oba stany
+   czyta się osobno, także na wybranej strefie */
+.venuemap-area.selected .venuemap-area-shape {
+  stroke: var(--cat-line-sel);
+  stroke-width: var(--cat-line-w-sel);
+  stroke-dasharray: var(--cat-dash-sel);
+}
+
+.venuemap-area:focus {
+  outline: none;
+}
+
+.venuemap-area:focus-visible .venuemap-area-shape {
+  stroke: var(--gold);
+  stroke-width: 1.2;
+}
+
+.venuemap-tooltip {
+  position: absolute;
+  z-index: 5;
+  padding: var(--sp-1) var(--sp-2);
+  background: var(--black);
+  color: var(--white);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  pointer-events: none;
+  white-space: nowrap;
+  transform: translate(-50%, -130%);
+  box-shadow: var(--shadow-sm);
+}
+
+/* opis wybranej strefy stoi nad planem; stała wysokość sprawia, że wybór
+   kolejnej strefy nie przesuwa mapy pod kursorem */
+.venuemap-detail {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: var(--venuemap-detail-h);
+  width: 100%;
+  max-width: var(--measure);
+  margin-inline: auto;
+  text-align: center;
+}
+
+.venuemap-detail h3 {
+  font-family: "Luckiest Guy UI", "Luckiest Guy", cursive;
+  font-size: var(--fs-2xl);
+  letter-spacing: var(--ls-base);
+  margin-bottom: var(--sp-3);
+}
+
+.venuemap-detail p {
+  font-size: var(--fs-md);
+  line-height: var(--lh-body);
+}
+
+.venuemap-detail-empty {
+  opacity: 0.8;
+}
+
+.venuemap-detail-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--sp-3);
+}
+
+.venuemap-detail-link {
+  display: inline-block;
+  margin-top: var(--sp-4);
+  padding: var(--sp-2) var(--sp-4);
+  border: 2px solid var(--border-strong);
+  border-radius: var(--radius-pill);
+  background: var(--surface-soft);
+  color: var(--white);
+  font-weight: 700;
+  text-decoration: none;
+  transition:
+    background var(--t-fast),
+    border-color var(--t-fast);
+}
+
+.venuemap-detail-link:hover,
+.venuemap-detail-link:focus-visible {
+  background: var(--white);
+  border-color: var(--white);
+  color: var(--teal);
+  outline: none;
+}
+
+.venuemap-intro p {
+  font-size: var(--fs-lg);
+  line-height: var(--lh-snug);
+}
+
+.venuemap-intro-hint {
+  margin-top: var(--sp-3);
+  font-size: var(--fs-sm) !important;
+  opacity: 0.85;
+}
+
+/* Plany, kafelki programu i listy stoisk klika się, a nie czyta zaznaczając -
+   przy wielokrotnym klikaniu zaznaczanie tekstu tylko przeszkadza. Panele
+   z opisami zostają zaznaczalne, bo z nich kopiuje się nazwy i odnośniki. */
+.program-special,
+.program-grid,
+.denmap-plan,
+.denmap-list,
+.venuemap-plan {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* przewijane w bok rzędy można złapać myszką - kursor to zapowiada. Na dotyku
+   nie ma kursora ani przeciągania, więc i podpowiedzi nie pokazujemy. */
+@media (hover: hover) {
+  .program-grid,
+  .venuemap-plan-scroll {
+    cursor: grab;
+  }
+
+  .program-grid.is-dragging,
+  .venuemap-plan-scroll.is-dragging,
+  .program-grid.is-dragging *,
+  .venuemap-plan-scroll.is-dragging * {
+    cursor: grabbing;
+  }
 }
 
 /* tickets */
@@ -1977,14 +2515,8 @@ h3,
     --denmap-plan-w: 290px;
     --denmap-detail-h: 13rem;
     --walkmap-h: 380px;
-  }
-
-  .program-grid {
-    flex-direction: column;
-  }
-
-  .program-column {
-    width: 100%;
+    /* rząd sal zostaje w poziomie także na telefonie, tylko kolumny są węższe */
+    --program-col-w: 230px;
   }
 
   .nav-links {

@@ -73,8 +73,9 @@
       <ul class="nav-links" id="navLinks">
         <li><a href="#about" class="nav-link">Czym jest Wroof?</a></li>
         <li><a href="#tickets" class="nav-link">Bilety</a></li>
-        <li><a href="#program" class="nav-link">Program</a></li>
         <li><a href="#walk" class="nav-link">Fursuitwalk</a></li>
+        <li><a href="#program" class="nav-link">Program</a></li>
+        <li><a href="#venue" class="nav-link">Mapa</a></li>
         <li><a href="#dealers" class="nav-link">Wystawcy</a></li>
         <li><a href="#faq" class="nav-link">FAQ</a></li>
         <li><a href="#contact" class="nav-link">Kontakt</a></li>
@@ -285,35 +286,10 @@
         </div>
       </div>
     </section>
-    <section class="section program" id="program">
-      <img
-        src="img/1ilustracja lisa.png"
-        alt=""
-        class="program-illustration"
-        aria-hidden="true"
-      />
-      <div class="program-content">
-        <h2 class="fade-in">Program</h2>
-        <!-- <p class="tickets-subtitle fade-in">
-          Naciśnij na kafelek, aby przeczytać szczegóły
-        </p> -->
-        <p class="tickets-subtitle fade-in">
-          Jak co roku, możecie spodziewać się całego dnia atrakcji! W programie
-          znajdziecie <strong>warsztaty o fursuitach</strong>,
-          <strong
-            >prelekcje związane ze społecznością oraz na inne tematy</strong
-          >, <strong>koncerty podczas wieczornej imprezy</strong>,
-          <strong>strefy czillu</strong>, naturalnie
-          <strong>fursuitwalka</strong> oraz wiele więcej!
-          <br />
-          <br />
-          Dokładny rozkład jazdy poznacie bliżej wydarzenia!
-        </p>
-        <div class="program-grid" id="programGrid"></div>
-      </div>
-    </section>
-
     <section class="section walk" id="walk">
+      <div class="walk-bg-layer" aria-hidden="true">
+        <img src="badge/helper-bg.png" class="walk-bg" alt="" />
+      </div>
       <div class="walk-content">
         <h2 class="fade-in">Fursuitwalk</h2>
         <div class="walkmap fade-in" id="walkMap">
@@ -347,6 +323,54 @@
       </div>
     </section>
 
+    <section class="section program" id="program">
+      <img
+        src="img/1ilustracja lisa.png"
+        alt=""
+        class="program-illustration"
+        aria-hidden="true"
+      />
+      <div class="program-content">
+        <h2 class="fade-in">Program</h2>
+        <!-- <p class="tickets-subtitle fade-in">
+          Naciśnij na kafelek, aby przeczytać szczegóły
+        </p> -->
+        <div class="program-detail fade-in" id="programDetail" aria-live="polite"></div>
+        <ul class="program-special fade-in" id="programSpecial"></ul>
+        <div class="program-grid scroll-fade-x fade-in" id="programGrid"></div>
+      </div>
+    </section>
+
+    <section class="section venue" id="venue">
+      <div class="venue-content">
+        <h2 class="fade-in">Mapa terenu</h2>
+        <div class="venuemap fade-in" id="venueMap">
+          <div class="venuemap-detail" id="venueDetail" aria-live="polite"></div>
+
+          <div class="venuemap-plan">
+            <div class="venuemap-plan-scroll scroll-fade-x">
+              <div class="venuemap-plan-inner">
+                <svg
+                  id="venueMapSvg"
+                  class="venuemap-svg"
+                  preserveAspectRatio="xMidYMid meet"
+                  role="group"
+                  aria-label="Plan terenu Wroof"
+                ></svg>
+              </div>
+            </div>
+            <!-- dymek siedzi poza kontenerem przewijania, żeby ten go nie
+                 przycinał ani nie doliczał do szerokości przewijania -->
+            <div class="venuemap-tooltip" id="venueTooltip" hidden></div>
+            <p class="venuemap-hint">
+              Przesuń plan w bok, aby zobaczyć całość
+            </p>
+            <ul class="venuemap-legend" id="venueLegend"></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section class="section dealers" id="dealers">
       <div class="dealers-content">
         <h2 class="fade-in">Wystawcy</h2>
@@ -362,7 +386,7 @@
                 viewBox="0 -4 69 186"
                 preserveAspectRatio="xMidYMid meet"
                 role="group"
-                aria-label="Plan Dealer's Den"
+                aria-label="Plan Dealers' Den"
               ></svg>
               <div class="denmap-tooltip" id="denTooltip" hidden></div>
             </div>
@@ -372,7 +396,7 @@
           </div>
 
           <div class="denmap-side">
-            <div class="denmap-detail" id="denDetail" aria-live="polite"></div>
+            <div class="denmap-detail scroll-fade-y" id="denDetail" aria-live="polite"></div>
             <input
               type="search"
               id="denSearch"
@@ -381,7 +405,7 @@
               aria-label="Szukaj wystawcy"
               autocomplete="off"
             />
-            <ol class="denmap-list" id="denList"></ol>
+            <ol class="denmap-list scroll-fade-y" id="denList"></ol>
           </div>
         </div>
       </div>
