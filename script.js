@@ -494,8 +494,8 @@ const programEvents = [
 
   // Sala 2
   {
-    start: 11,
-    end: 12,
+    start: 10.5,
+    end: 11.5,
     title: "Muzyka w fandomie",
     kind: "prelekcja",
     description:
@@ -524,8 +524,8 @@ const programEvents = [
 
   // Sala 3
   {
-    start: 11,
-    end: 12,
+    start: 10.5,
+    end: 11.5,
     title: "Zostać swoją fursoną",
     kind: "prelekcja",
     description:
@@ -546,7 +546,7 @@ const programEvents = [
     end: 19,
     title: "Geocaching",
     kind: "prelekcja",
-    description: "Geocaching — czym właściwie jest tao szukanie skrzynek?",
+    description: "Geocaching — czym właściwie jest to szukanie skrzynek?",
     hosts: ["Svartrav"],
     location: "sala3",
   },
@@ -630,8 +630,8 @@ const programEvents = [
     location: "lacznik",
   },
   { start: 22, end: 23, title: "Soren", kind: "koncert", location: "lacznik" },
-  { start: 23, end: 24, title: "Feniks", kind: "koncert", location: "lacznik" },
-  { start: 24, end: 25, title: "Tino", kind: "koncert", location: "lacznik" },
+  { start: 23, end: 23.5, title: "Feniks", kind: "koncert", location: "lacznik" },
+  { start: 23.5, end: 25, title: "Tino", kind: "koncert", location: "lacznik" },
 ];
 
 // do wyszukiwania: małe litery bez ogonków (ł nie rozkłada się przez NFD)
