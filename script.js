@@ -613,7 +613,7 @@ const programEvents = [
     title: "HI.YEENA",
     kind: "koncert",
     description:
-      "DJ set łączący klubowe, groove'owe house'y ze znanymi piosenkami - mashupy poskładane z kawałków utworów.",
+      "Po prostu muzyczne vibe'y, taki do chillu 🥺👉👈",
     hosts: ["Richard"],
     location: "teren",
   },
