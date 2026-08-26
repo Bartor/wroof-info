@@ -550,7 +550,8 @@ const programEvents = [
   {
     start: 17,
     end: 18,
-    title: "Jak zostać aktorem głosowym?",
+    title:
+      "Wrzaski pośród miękkich ścian, czyli i ty możesz zostać aktorem głosowym",
     kind: "prelekcja",
     description:
       "Po wielu latach pracy nad dużymi tytułami jako projektant gier komputerowych, Neeto Batito (aka Yoshi) postanowił poszerzyć swoją ekspertyzę o voice acting. Jak to się robi i czego potrzeba w tej pracy?",
