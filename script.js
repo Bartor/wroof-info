@@ -292,8 +292,7 @@ function renderProgram(events, containerId = "programGrid") {
 
   const intro = `
     <div class="program-intro">
-      <p>Cały dzień atrakcji w kilku salach naraz &ndash; warsztaty, prelekcje
-      i wieczorne występy.</p>
+      <p>Cały dzień atrakcji &ndash; warsztaty, prelekcje i wieczorne występy.</p>
       <p class="program-intro-hint">Wybierz punkt programu, aby zobaczyć szczegóły</p>
     </div>`;
 
@@ -488,19 +487,22 @@ const programEvents = [
     start: 17,
     end: 21,
     title: "Szycie fursuitów",
+    description:
+      "Powracające warsztaty szycia i fursuitmakingu pod okiem specjalistek z eFutro - Nutka Fursuits i Dragonia Cosplay!",
     kind: "warsztat",
+    hosts: ["Nutka Fursuits", "Dragonia Cosplay"],
     location: "sala1",
   },
 
   // Sala 2
   {
-    start: 10.5,
+    start: 10,
     end: 11.5,
-    title: "Muzyka w fandomie",
+    title: "Furry Eventy w Polsce i w Europie",
     kind: "prelekcja",
     description:
-      "Prezentacja o muzycznej stronie fandomu — krótka historia, gatunki, futrzaści twórcy oraz kulisy tworzenia i wydawania własnej muzyki.",
-    hosts: ["Falconthropy"],
+      "Pierwszy konwent przed tobą? Może marzysz o konwencie za granicą? Praktyczny przewodnik po tym, jak się przygotować, dojechać i dobrze się bawić na furry eventach w Polsce i Europie.",
+    hosts: ["ZGrate"],
     location: "sala2",
   },
   {
@@ -508,7 +510,9 @@ const programEvents = [
     end: 20,
     title: "Warsztaty rysunkowe",
     kind: "warsztat",
-    hosts: ["Roborak"],
+    description:
+      "Roborak - autor tegorocznych grafik na identyfikatory - oraz Modest - wrocławski grafik - poprowadzą warsztaty rysunkowe, podczas których będziecie mogli nauczyć się technik i myślenia o rysunku z perseptkywy zawodowców!",
+    hosts: ["Roborak", "Modest"],
     location: "sala2",
   },
   {
@@ -524,12 +528,22 @@ const programEvents = [
 
   // Sala 3
   {
-    start: 10.5,
-    end: 11.5,
+    start: 10,
+    end: 11,
+    title: "Muzyka w fandomie",
+    kind: "prelekcja",
+    description:
+      "Prezentacja o muzycznej stronie fandomu - krótka historia, gatunki, futrzaści twórcy oraz kulisy tworzenia i wydawania własnej muzyki.",
+    hosts: ["Falconthropy"],
+    location: "sala3",
+  },
+  {
+    start: 11,
+    end: 12,
     title: "Zostać swoją fursoną",
     kind: "prelekcja",
     description:
-      "Jak stać się swoją fursoną? Przegląd metod — od roleplayu i fursuitów po pomysły rodem z science fiction.",
+      "Jak stać się swoją fursoną? Przegląd metod - od roleplayu i fursuitów po pomysły rodem z science fiction.",
     hosts: ["VladiVerse"],
     location: "sala3",
   },
@@ -538,7 +552,9 @@ const programEvents = [
     end: 18,
     title: "Jak zostać aktorem głosowym?",
     kind: "prelekcja",
-    hosts: ["Yoshi"],
+    description:
+      "Po wielu latach pracy nad dużymi tytułami jako projektant gier komputerowych, Neeto Batito (aka Yoshi) postanowił poszerzyć swoją ekspertyzę o voice acting. Jak to się robi i czego potrzeba w tej pracy?",
+    hosts: ["Neeto Batito (aka Yoshi)"],
     location: "sala3",
   },
   {
@@ -574,14 +590,32 @@ const programEvents = [
   // Teren (na planie: scena zewnętrzna)
   {
     start: 17,
-    end: 19,
+    end: 18.5,
     title: "Warsztaty line dance",
     kind: "warsztat",
     description:
-      "Warsztaty line dance w kowbojskim klimacie — doświadczenie nie wymagane!",
+      "Warsztaty line dance w kowbojskim klimacie - doświadczenie nie wymagane!",
     location: "teren",
   },
-  { start: 19, end: 22, title: "Scena DJ", kind: "koncert", location: "teren" },
+  {
+    start: 19,
+    end: 20.5,
+    title: "Mowen DJ set",
+    kind: "koncert",
+    description: "Set w formule open format - wszystko, co dobrze niesie.",
+    hosts: ["Mowen"],
+    location: "teren",
+  },
+  {
+    start: 20.5,
+    end: 22,
+    title: "MASH.HAUSE",
+    kind: "koncert",
+    description:
+      "DJ set łączący klubowe, groove'owe house'y ze znanymi piosenkami - mashupy poskładane z kawałków utworów.",
+    hosts: ["Richard"],
+    location: "teren",
+  },
 
   // Scena zewnętrzna (na planie: teren przed halą)
   {
@@ -591,7 +625,7 @@ const programEvents = [
     kind: "koncert",
     description:
       "„Inni INNI” — plenerowy spektakl Teatru Nowego Cyrku Kolektyw KEJOS o czwórce klaunów, które tracą swój cyrk i dom. Opowieść o inności, tożsamości i akceptacji, inspirowana „Przygodami Pędrka Wyrzutka” Themersona. Dla widzów w każdym wieku.",
-    hosts: ["Kejos"],
+    hosts: ["Teatr Kejos"],
     location: "scena",
   },
   {
@@ -610,28 +644,67 @@ const programEvents = [
     start: 18,
     end: 19,
     title: "The Generates",
+    description:
+      "Siedmiu muzyków, jedna scena i pierwszy w historii Wroofa koncert na żywo! Czy to jazz? Czy to rock? Czy to funk? Sami nie umieją powiedzieć - liczy się tylko dobra zabawa!",
+    hosts: [
+      "Bartor",
+      "BryQ",
+      "Feniks",
+      "Grave",
+      "Nadi",
+      "Pasterz",
+      "Skaj",
+      "Witek",
+    ],
     kind: "koncert",
     location: "lacznik",
   },
   {
     start: 20,
     end: 21,
-    title: "Shacchi",
+    title: "DJ 0RC4",
     kind: "koncert",
-    description: "DJ set w klimatach jungle i drum and bassu.",
+    description: "DJ set w klimatach jungle i D&B.",
+    hosts: ["Shacchi"],
     location: "lacznik",
   },
   {
     start: 21,
     end: 22,
-    title: "Altro",
+    title: "ALT-0",
     kind: "koncert",
-    description: "DJ set pełen dobrego vibe'u na koniec lata.",
+    description: "ALT-0 : Start the Techno. Powrót do mocnych bitów!",
+    hosts: ["DJ Altro"],
     location: "lacznik",
   },
-  { start: 22, end: 23, title: "Soren", kind: "koncert", location: "lacznik" },
-  { start: 23, end: 23.5, title: "Feniks", kind: "koncert", location: "lacznik" },
-  { start: 23.5, end: 25, title: "Tino", kind: "koncert", location: "lacznik" },
+  {
+    start: 22,
+    end: 23,
+    title: "Soren DJ set",
+    description: "Organica, Melodic Techno, DnB",
+    kind: "koncert",
+    hosts: ["Soren"],
+    location: "lacznik",
+  },
+  {
+    start: 23,
+    end: 23.5,
+    title: "Shitpostcore 3-6-9-#",
+    description:
+      "Na main stage w sobotę o 23:00 NIE będzie grany Shitpostcore 3-6-9-#. Proszę NIE przychodzić na Wroof w tym celu.",
+    kind: "koncert",
+    hosts: ["Feniks"],
+    location: "lacznik",
+  },
+  {
+    start: 23.5,
+    end: 25,
+    title: "Tino DJ set",
+    kind: "koncert",
+    description: "Gościnny występ z UK w klimatach IDM!",
+    hosts: ["Tino"],
+    location: "lacznik",
+  },
 ];
 
 // do wyszukiwania: małe litery bez ogonków (ł nie rozkłada się przez NFD)
