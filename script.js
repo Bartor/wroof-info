@@ -610,7 +610,7 @@ const programEvents = [
   {
     start: 20.5,
     end: 22,
-    title: "MASH.HAUSE",
+    title: "HI.YEENA",
     kind: "koncert",
     description:
       "DJ set łączący klubowe, groove'owe house'y ze znanymi piosenkami - mashupy poskładane z kawałków utworów.",
