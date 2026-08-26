@@ -316,7 +316,7 @@ function renderProgram(events, containerId = "programGrid") {
       </p>
       ${
         event.description
-          ? `<p>${event.description}</p>`
+          ? `<p>${formatRichText(event.description)}</p>`
           : `<p class="program-detail-empty">Opis pojawi się już niedługo!</p>`
       }
     `;
@@ -479,7 +479,7 @@ const programEvents = [
     title: "Szycie pluszaków",
     kind: "warsztat",
     description:
-      "Uszyj własnego mini-pluszaka! Poznasz pracę z wykrojami, ręczne ściegi oraz sposoby na oczka i aplikacje, a wyjdziesz z okrągłym breloczkiem własnego pomysłu. Obowiązują wcześniejsze zapisy - ogłoszenie niedługo.",
+      "Uszyj własnego mini-pluszaka! Poznasz pracę z wykrojami, ręczne ściegi oraz sposoby na oczka i aplikacje, a wyjdziesz z okrągłym breloczkiem własnego pomysłu. *Obowiązują wcześniejsze zapisy - ogłoszenie niedługo.*",
     hosts: ["reyk4h"],
     location: "sala1",
   },
@@ -488,7 +488,7 @@ const programEvents = [
     end: 21,
     title: "Szycie fursuitów",
     description:
-      "Powracające warsztaty szycia i fursuitmakingu pod okiem specjalistek z eFutro - Nutka Fursuits i Dragonia Cosplay! Obowiązują wcześniejsze zapisy - ogłoszenie niedługo.",
+      "Powracające warsztaty szycia i fursuitmakingu pod okiem specjalistek z eFutro - Nutka Fursuits i Dragonia Cosplay! *Obowiązują wcześniejsze zapisy - ogłoszenie niedługo.*",
     kind: "warsztat",
     hosts: ["Nutka Fursuits", "Dragonia Cosplay"],
     location: "sala1",
@@ -511,7 +511,7 @@ const programEvents = [
     title: "Warsztaty rysunkowe",
     kind: "warsztat",
     description:
-      "Roborak - autor tegorocznych grafik na identyfikatory - oraz Modest - wrocławski grafik - zapraszają wszystkich na unikalne warsztaty z rysunku, podczas których pozować będą fursuiterzy! Dla chętnych dostępne będą też kolorowanki. Obowiązują wcześniejsze zapisy - ogłoszenie niedługo.",
+      "Roborak - autor tegorocznych grafik na identyfikatory - oraz Modest - wrocławski grafik - zapraszają wszystkich na unikalne warsztaty z rysunku, podczas których pozować będą fursuiterzy! Dla chętnych dostępne będą też kolorowanki. *Obowiązują wcześniejsze zapisy - ogłoszenie niedługo.*",
     hosts: ["Roborak", "Modest"],
     location: "sala2",
   },
@@ -595,7 +595,7 @@ const programEvents = [
     title: "Warsztaty line dance",
     kind: "warsztat",
     description:
-      "Warsztaty line dance w kowbojskim klimacie - doświadczenie nie wymagane! Obowiązują wcześniejsze zapisy - ogłoszenie niedługo.",
+      "Warsztaty line dance w kowbojskim klimacie - doświadczenie nie wymagane! *Obowiązują wcześniejsze zapisy - ogłoszenie niedługo.*",
     location: "teren",
   },
   {
@@ -728,6 +728,14 @@ function formatLinkLabel(url) {
   } catch {
     return url;
   }
+}
+
+// Lekkie formatowanie opisów: *kursywa*, **pogrubienie**. Treść najpierw
+// escapujemy, więc w opisach można pisać zwykły tekst bez oglądania się na HTML.
+function formatRichText(str) {
+  return escapeHtml(str)
+    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*([^*]+)\*/g, "<em>$1</em>");
 }
 
 function escapeHtml(str) {
