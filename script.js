@@ -511,7 +511,7 @@ const programEvents = [
     title: "Warsztaty rysunkowe",
     kind: "warsztat",
     description:
-      "Roborak - autor tegorocznych grafik na identyfikatory - oraz Modest - wrocławski grafik - poprowadzą warsztaty rysunkowe, podczas których będziecie mogli nauczyć się technik i myślenia o rysunku z perseptkywy zawodowców!",
+      "Roborak - autor tegorocznych grafik na identyfikatory - oraz Modest - wrocławski grafik - zapraszają wszystkich na unikalne warsztaty z rysunku, podczas których pozować będą fursuiterzy! Dla chętnych dostępne będą też kolorowanki.",
     hosts: ["Roborak", "Modest"],
     location: "sala2",
   },
