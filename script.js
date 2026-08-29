@@ -435,7 +435,7 @@ let focusProgramColumn = null;
 // z zaznaczeniem strefy (jak nagłówki kolumn programu).
 const programSpecials = [
   { title: "Dealers' Den", start: 10, end: 20, href: "#dealers" },
-  { title: "Przebieralnia", start: 9, end: 23, venue: "przebieralnia" },
+  { title: "Przebieralnia", start: 9, end: 24, venue: "przebieralnia" },
   { title: "Furwalk", start: 12, end: 14.5, href: "#walk" },
 ];
 
