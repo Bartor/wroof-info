@@ -701,7 +701,7 @@ const programEvents = [
     end: 25,
     title: "Tino DJ set",
     kind: "koncert",
-    description: "Gościnny występ z UK w klimatach IDM!",
+    description: 'Gościnny występ z UK, który autor nazywa "genrebending"!',
     hosts: ["Tino"],
     location: "lacznik",
   },
