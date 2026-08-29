@@ -600,21 +600,20 @@ const programEvents = [
   },
   {
     start: 19,
-    end: 20.5,
+    end: 20,
+    title: "HI.YEENA",
+    kind: "koncert",
+    description: "Po prostu muzyczne vibe'y, taki do chillu 🥺👉👈",
+    hosts: ["Richard"],
+    location: "teren",
+  },
+  {
+    start: 20,
+    end: 22,
     title: "Mowen DJ set",
     kind: "koncert",
     description: "Set w formule open format - wszystko, co dobrze niesie.",
     hosts: ["Mowen"],
-    location: "teren",
-  },
-  {
-    start: 20.5,
-    end: 22,
-    title: "HI.YEENA",
-    kind: "koncert",
-    description:
-      "Po prostu muzyczne vibe'y, taki do chillu 🥺👉👈",
-    hosts: ["Richard"],
     location: "teren",
   },
 
