@@ -1913,6 +1913,27 @@ a.program-location:focus-visible {
   line-height: var(--lh-body);
 }
 
+/* linijka pod tytułem strefy: organizatorzy i godzina otwarcia */
+.venuemap-detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  column-gap: var(--sp-3);
+  margin-top: calc(-1 * var(--sp-2));
+  margin-bottom: var(--sp-3);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  letter-spacing: var(--ls-base);
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.venuemap-detail-meta span + span::before {
+  content: "•";
+  margin-right: var(--sp-3);
+  opacity: 0.6;
+}
+
 .venuemap-detail-empty {
   opacity: 0.8;
 }

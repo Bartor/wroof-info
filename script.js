@@ -1736,9 +1736,12 @@ const venueAreas = [
   {
     id: "strefa-gier",
     title: "Strefa gier",
-    description: "Kącik gier ruchowo-rytmicznych.",
+    description:
+      "Kącik gier ruchowo-rytmicznych! Czekają na was Dance Evolution, ParaParaParadise, Dance Central, Just Dance, Sound Voltex, CHUNITHM i potencjalnie jeszcze więcej",
     label: "Strefa\ngier",
     cat: "zone",
+    hosts: ["Krypto", "Yami", "Norx"],
+    opens: "15:00",
     labelSize: 2.8,
     shapes: [{ col: 61, row: 30, w: 5, h: 4 }],
   },
@@ -1749,6 +1752,7 @@ const venueAreas = [
       "Miejsce na odpoczynek przy herbacie serwowanej przez Czajhauz.",
     label: "Strefa\nchill",
     cat: "zone",
+    hosts: ["Czajhauz"],
     labelSize: 2.8,
     // między salami prelekcyjnymi, w tym samym słupku przy wschodniej ścianie
     shapes: [{ col: 70, row: 25, w: 5, h: 4 }],
@@ -1981,8 +1985,28 @@ function renderVenueMap(areas) {
           ]
         : []),
     ];
+    // opcjonalna linijka pod tytułem: kto prowadzi strefę i od której działa
+    const meta = [
+      ...(area.hosts && area.hosts.length
+        ? [
+            `${area.hosts.length > 1 ? "Prowadzą" : "Prowadzi"}: ${escapeHtml(
+              area.hosts.length > 1
+                ? `${area.hosts.slice(0, -1).join(", ")} i ${area.hosts[area.hosts.length - 1]}`
+                : area.hosts[0],
+            )}`,
+          ]
+        : []),
+      ...(area.opens ? [`Otwarcie o ${escapeHtml(area.opens)}`] : []),
+    ];
     detail.innerHTML = `
       <h3>${escapeHtml(area.title)}</h3>
+      ${
+        meta.length
+          ? `<p class="venuemap-detail-meta">${meta
+              .map((item) => `<span>${item}</span>`)
+              .join("")}</p>`
+          : ""
+      }
       ${
         area.description
           ? `<p>${escapeHtml(area.description)}</p>`
