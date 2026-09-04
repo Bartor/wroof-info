@@ -486,9 +486,9 @@ const programEvents = [
   {
     start: 17,
     end: 21,
-    title: "Szycie fursuitów",
+    title: "Twój własny ogon!",
     description:
-      "Powracające warsztaty szycia i fursuitmakingu pod okiem specjalistek z eFutro - Nutka Fursuits i Dragonia Cosplay! *Obowiązują wcześniejsze zapisy - ogłoszenie niedługo.*",
+      "Powracające warsztaty szycia i fursuitmakingu pod okiem specjalistek z eFutro - Nutka Fursuits i Dragonia Cosplay! W tym roku podczas tych czterogodzinnych warsztatów każdy uczestnik będzie mógł uszyć swój własny ogon! *Obowiązują wcześniejsze zapisy - ogłoszenie niedługo.*",
     kind: "warsztat",
     hosts: ["Nutka Fursuits", "Dragonia Cosplay"],
     location: "sala1",
@@ -508,10 +508,10 @@ const programEvents = [
   {
     start: 17,
     end: 20,
-    title: "Warsztaty rysunkowe",
+    title: "Kącik rysunkowy",
     kind: "warsztat",
     description:
-      "Roborak - autor tegorocznych grafik na identyfikatory - oraz Modest - wrocławski grafik - zapraszają wszystkich na unikalne warsztaty z rysunku, podczas których pozować będą fursuiterzy! Dla chętnych dostępne będą też kolorowanki. *Obowiązują wcześniejsze zapisy - ogłoszenie niedługo.*",
+      "Roborak - autor tegorocznych grafik na identyfikatory - oraz Modest - wrocławski grafik - zapraszają wszystkich na unikalne warsztaty z rysunku! Dla chętnych dostępne będą też kolorowanki.",
     hosts: ["Roborak", "Modest"],
     location: "sala2",
   },
