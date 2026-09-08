@@ -474,6 +474,16 @@ function renderProgramSpecials(specials, containerId = "programSpecial") {
 const programEvents = [
   // Sala 1
   {
+    start: 10,
+    end: 11.5,
+    title: "Furry Eventy w Polsce i w Europie",
+    kind: "prelekcja",
+    description:
+      "Pierwszy konwent przed tobą? Może marzysz o konwencie za granicą? Praktyczny przewodnik po tym, jak się przygotować, dojechać i dobrze się bawić na furry eventach w Polsce i Europie.",
+    hosts: ["ZGrate"],
+    location: "sala1",
+  },
+  {
     start: 15,
     end: 17,
     title: "Szycie pluszaków",
@@ -495,16 +505,6 @@ const programEvents = [
   },
 
   // Sala 2
-  {
-    start: 10,
-    end: 11.5,
-    title: "Furry Eventy w Polsce i w Europie",
-    kind: "prelekcja",
-    description:
-      "Pierwszy konwent przed tobą? Może marzysz o konwencie za granicą? Praktyczny przewodnik po tym, jak się przygotować, dojechać i dobrze się bawić na furry eventach w Polsce i Europie.",
-    hosts: ["ZGrate"],
-    location: "sala2",
-  },
   {
     start: 17,
     end: 20,
