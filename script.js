@@ -1093,6 +1093,15 @@ const dealersList = [
     description:
       "Studio Creative Dog Paws zajmuje się profesjonalnym tworzeniem fursuitów od 2023 roku! Na stoisku znajdziecie również części do fursuitów, od ogonów po łapki górne. Oprócz tego znajdziecie też rysunki tworzone digitalowo - na stoisku w postaci różnych przedmiotów, akcesoriów do wystroju wnętrza lub ozdoby waszego plecaka czy kluczy! Dodatkowo od niedawna można znaleźć różne ciekawe dodatki do fursuitów, jak propsy czy obroże. ;3 Serdecznie zapraszamy!",
   },
+  {
+    id: 33,
+    title: "Dragonia Cosplay i Nutka Fursuits",
+    lane: "A",
+    row: -1,
+    links: [],
+    description:
+      "Dragonia Cosplay i Nutka Fursuits to twórczynie fursuitów, które oprócz swoich prac prezentują na Wroof także warsztaty z szycia ogonów z efutra. Zajrzyjcie na stoisko, aby zobaczyć ich puchate dzieła i dowiedzieć się, jak samodzielnie uszyć własny ogon!",
+  },
 ];
 
 function renderDealerDen(dealers) {
@@ -1104,11 +1113,18 @@ function renderDealerDen(dealers) {
   if (!svg || !list || !detail) return;
 
   const { laneX, stallW, stallH, rowH } = denGeometry;
+  // viewBox liczony z rozmieszczenia stoisk, żeby białe tło planu zawsze
+  // obejmowało wszystkie kafelki (także te nad rzędem 0) z zapasem
+  const denPad = 6;
+  const rows = dealers.map((d) => d.row);
+  const minY = Math.min(...rows) * rowH - denPad;
+  const maxY = Math.max(...rows) * rowH + stallH + denPad;
+  svg.setAttribute("viewBox", `0 ${minY} 69 ${maxY - minY}`);
   // panel opisu bez wybranego stoiska służy jako wstęp do sekcji
   const intro = `
     <div class="denmap-intro">
       <p>W tym roku na Dealers' Denie znajdziecie</p>
-      <p class="denmap-intro-count">32 stanowiska</p>
+      <p class="denmap-intro-count">33 stanowiska</p>
       <p>pełne sztuki, rękodzieła i futrzastych gadżetów!</p>
       <p class="denmap-intro-hint">Wybierz stanowisko na planie lub z listy, aby dowiedzieć się o nim więcej</p>
     </div>`;
