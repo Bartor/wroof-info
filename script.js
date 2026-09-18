@@ -1098,7 +1098,10 @@ const dealersList = [
     title: "Dragonia Cosplay i Nutka Fursuits",
     lane: "A",
     row: -1,
-    links: [],
+    links: [
+      "https://www.instagram.com/dragonia_cosplay/",
+      "https://www.instagram.com/nutka_fursuits/",
+    ],
     description:
       "Dragonia Cosplay i Nutka Fursuits to twórczynie fursuitów, które oprócz swoich prac prezentują na Wroof także warsztaty z szycia ogonów z efutra. Zajrzyjcie na stoisko, aby zobaczyć ich puchate dzieła i dowiedzieć się, jak samodzielnie uszyć własny ogon!",
   },
