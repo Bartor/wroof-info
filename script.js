@@ -681,7 +681,7 @@ const programEvents = [
   },
   {
     start: 22,
-    end: 23.5,
+    end: 23,
     title: "Soren DJ set",
     description: "Organica, Melodic Techno, DnB",
     kind: "koncert",
@@ -700,7 +700,7 @@ const programEvents = [
     cancelled: true,
   },
   {
-    start: 23.5,
+    start: 23,
     end: 25,
     title: "Tino DJ set",
     kind: "koncert",
