@@ -271,9 +271,10 @@ function renderProgram(events, containerId = "programGrid") {
           .map((event) => {
             const kind = programKinds[event.kind];
             return `
-            <button type="button" class="program-card" data-event-id="${sorted.indexOf(event)}" aria-pressed="false">
+            <button type="button" class="program-card${event.cancelled ? " is-cancelled" : ""}" data-event-id="${sorted.indexOf(event)}" aria-pressed="false">
               <span class="program-card-time">${formatTime(event.start)} - ${formatTime(event.end)}${kind ? ` <span class="program-card-tag" data-kind="${event.kind}">${kind}</span>` : ""}</span>
               <span class="program-card-title">${event.title}</span>
+              ${event.cancelled ? `<span class="program-card-cancelled">Odwołane</span>` : ""}
             </button>`;
           })
           .join("")}
@@ -309,7 +310,8 @@ function renderProgram(events, containerId = "programGrid") {
     const hosts =
       event.hosts && event.hosts.length ? formatHosts(event.hosts) : "";
     detail.innerHTML = `
-      <h3>${event.title}</h3>
+      <h3${event.cancelled ? ` class="is-cancelled"` : ""}>${event.title}</h3>
+      ${event.cancelled ? `<p class="program-detail-cancelled">Ten punkt programu został odwołany.</p>` : ""}
       <p class="program-detail-meta">
         ${formatTime(event.start)} &ndash; ${formatTime(event.end)}
         &middot; ${room}${hosts ? ` &middot; ${hosts}` : ""}
@@ -679,7 +681,7 @@ const programEvents = [
   },
   {
     start: 22,
-    end: 23,
+    end: 23.5,
     title: "Soren DJ set",
     description: "Organica, Melodic Techno, DnB",
     kind: "koncert",
@@ -695,6 +697,7 @@ const programEvents = [
     kind: "koncert",
     hosts: ["Feniks"],
     location: "lacznik",
+    cancelled: true,
   },
   {
     start: 23.5,

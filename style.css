@@ -785,6 +785,35 @@ a.program-location:focus-visible {
   text-wrap: balance;
 }
 
+/* odwołany punkt programu - przekreślony i wyszarzony, ale zostaje na liście,
+   żeby nikt nie szukał go w programie na próżno */
+.program-card.is-cancelled {
+  background: var(--grey-100);
+}
+
+.program-card.is-cancelled .program-card-time,
+.program-card.is-cancelled .program-card-title {
+  color: var(--grey-700);
+  text-decoration: line-through;
+  text-decoration-thickness: 3px;
+}
+
+.program-card-cancelled,
+.program-detail-cancelled {
+  display: inline-block;
+  align-self: flex-start;
+  margin-top: var(--sp-2);
+  background: var(--black);
+  color: var(--white);
+  font-family: "Luckiest Guy UI", "Luckiest Guy", cursive;
+  font-size: var(--fs-xs);
+  padding: var(--sp-1) var(--sp-3);
+  border-radius: var(--radius-pill);
+  corner-shape: var(--squircle);
+  letter-spacing: var(--ls-base);
+  white-space: nowrap;
+}
+
 /* opis wybranego punktu - pod tytułem sekcji, jak przy planie terenu */
 .program-detail {
   display: flex;
@@ -818,6 +847,17 @@ a.program-location:focus-visible {
   letter-spacing: var(--ls-base);
   color: var(--teal);
   margin-bottom: var(--sp-3);
+}
+
+.program-detail h3.is-cancelled {
+  color: var(--grey-700);
+  text-decoration: line-through;
+  text-decoration-thickness: 4px;
+}
+
+.program-detail-cancelled {
+  align-self: center;
+  margin-bottom: var(--sp-2);
 }
 
 .program-detail-empty {
