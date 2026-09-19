@@ -578,6 +578,7 @@ const programEvents = [
       "Pokojowy Patrol od środka: czym zajmuje się podczas wydarzeń, jak do niego dołączyć i co można dzięki temu zyskać.",
     hosts: ["Legryf"],
     location: "sala3",
+    cancelled: true,
   },
   {
     start: 20,
