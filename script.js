@@ -550,8 +550,8 @@ const programEvents = [
     location: "sala3",
   },
   {
-    start: 17,
-    end: 18,
+    start: 19,
+    end: 20,
     title:
       "Wrzaski pośród miękkich ścian, czyli i ty możesz zostać aktorem głosowym",
     kind: "prelekcja",
